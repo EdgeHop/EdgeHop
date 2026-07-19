@@ -1,0 +1,20 @@
+@page "/"
+
+<PageTitle>Fixture home</PageTitle>
+
+<h1>Home</h1>
+
+<Child OnPing="HandleClick" />
+
+<TypedList Items="_items" />
+
+<button @onclick="HandleClick">ping</button>
+
+@code {
+    private readonly List<int> _items = new() { 1, 2, 3 };
+
+    private Task HandleClick()
+    {
+        return Task.CompletedTask;
+    }
+}

@@ -1,0 +1,134 @@
+@page "/"
+@rendermode InteractiveServer
+@inject IFeatureCatalog Catalog
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<h1>EdgeHop Explorer</h1>
+
+@* The 122 / 179 figures are the pinned census (see EXPECTED-GRAPH.md and
+   EdgeHopExplorerBlazorTests) — keep them in sync if the contract ever changes. *@
+<p class="lead">
+    A small but complete Blazor Server app whose whole job is to be <strong>indexed by EdgeHop</strong>.
+    EdgeHop reads this project with Roslyn (C#/Razor) and a native oxc parser (JavaScript), builds a
+    graph of <strong>122 nodes and 179 edges</strong>, and serves it to Claude Code over MCP — so it can
+    answer “who calls this?” without grepping. Every widget below is a real, working feature <em>and</em>
+    a labeled demonstration of one graph relationship.
+</p>
+
+<section class="panel">
+    <div class="panel-head">
+        <h2>EdgeHop’s building blocks</h2>
+        <span class="edge">RENDERS</span><span class="edge">CALLS</span>
+    </div>
+    <p>
+        These three cards are one source component, <code>FeatureCard</code>, rendered in a loop — the
+        loop is what creates a <span class="edge">RENDERS</span> edge from this page to it. Each card’s
+        text is the feature’s own <code>Describe()</code> method evaluated in markup (a
+        <span class="edge">CALLS</span> edge), and the cards happen to <em>document EdgeHop itself</em>:
+        its node kinds, its edge types, and its query tools. Click <strong>Select</strong> to raise an
+        <code>EventCallback</code> up to this page (another bound <span class="edge">CALLS</span>) — the
+        feature’s description then appears in the status panel further down.
+    </p>
+
+    <div class="card-grid">
+        @* Rendering a source-declared child component in a loop -> a RENDERS edge Home -> FeatureCard. *@
+        @foreach (var feature in Catalog.All)
+        {
+            <FeatureCard Feature="feature" OnSelect="HandleSelect" />
+        }
+    </div>
+</section>
+
+<section class="panel">
+    <div class="panel-head">
+        <h2>A generic component</h2>
+        <span class="edge">RENDERS</span>
+    </div>
+    <p>
+        EdgeHop’s four subsystems are shown through <code>TypedList&lt;T&gt;</code>, a generic
+        component. The Razor compiler infers <code>T = string</code> here, and the generated
+        type-inference helper is what produces the <span class="edge">RENDERS</span> edge to it. (The
+        <a href="/features">Features</a> page renders the very same component with data fetched over HTTP.)
+    </p>
+
+    @* An inferred-generic child -> a RENDERS edge Home -> TypedList (through the TypeInference helper). *@
+    <TypedList Items="_areas" />
+</section>
+
+<section class="panel">
+    <div class="panel-head">
+        <h2>Cross-tier JavaScript interop</h2>
+        <span class="edge cross">JS_CALLS</span><span class="edge cross">JS_INVOKES</span>
+    </div>
+    <p>
+        This is the boundary no compile-time reference crosses — and the one EdgeHop reconstructs
+        anyway. Clicking the button runs a full round trip between the two tiers:
+    </p>
+    <ol class="steps">
+        <li><strong>C# → JavaScript.</strong> This page calls <code>highlight()</code> and
+            <code>wireInterop()</code> in <code>explorer.js</code> — two
+            <span class="edge cross">JS_CALLS</span> edges.</li>
+        <li><strong>JavaScript → C#.</strong> <code>explorer.js</code> then calls back into this
+            component’s <code>[JSInvokable]</code> methods, <code>Ping</code> and <code>OnJsEvent</code>
+            — two <span class="edge cross">JS_INVOKES</span> edges.</li>
+        <li>The <code>OnJsEvent</code> callback sets the status below, so the value you see there
+            <em>originated in JavaScript</em> and travelled back into C#.</li>
+    </ol>
+
+    <button @onclick="Refresh">Highlight via JavaScript</button>
+
+    <p class="status">
+        <span class="status-label">Status (updated by the JS → C# callback):</span> <code>@_status</code>
+    </p>
+</section>
+
+@code {
+    private readonly string[] _areas = ["Extraction", "Storage", "Query", "Interop"];
+    private string _status = "idle";
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<Home>? _selfRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // import(...) correlates _module to the explorer.js module leaf, which is what lets the
+            // InvokeAsync calls below resolve to PRECISE JS_CALLS edges (by module leaf + name).
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/explorer.js");
+            _selfRef = DotNetObjectReference.Create(this);
+        }
+    }
+
+    private async Task Refresh()
+    {
+        // JS_CALLS #1 — module-correlated call to explorer.js#highlight.
+        _status = await _module!.InvokeAsync<string>("highlight", 1);
+
+        // JS_CALLS #2 — hand explorer.js our .NET reference so it can call back (see wireInterop).
+        await _module!.InvokeVoidAsync("wireInterop", _selfRef);
+    }
+
+    private void HandleSelect(IFeature feature)
+    {
+        // A resolved CALLS to IFeature.Describe (bound as the child's OnSelect handler).
+        _status = feature.Describe();
+    }
+
+    // --- JS_INVOKES targets: explorer.js#wireInterop calls back into these two methods. ---
+
+    [JSInvokable]
+    public static int Ping(int seed) => seed + 1;
+
+    [JSInvokable]
+    public void OnJsEvent(string message) => _status = message;
+
+    public async ValueTask DisposeAsync()
+    {
+        _selfRef?.Dispose();
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+        }
+    }
+}

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Pluggable oxc (JS/TS) extractor. Loaded reflectively by EdgeHop.Core.ExtractorFactory
+       as assembly 'EdgeHop.Oxc'. Shells out to the vendored native edgehop-oxc binary
+       (built from native/ with the Rust gnu toolchain) — no Node runtime. The binary is
+       committed under tools/ and copied next to the consuming exe so it deploys transitively. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EdgeHop.Core\EdgeHop.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Vendored native binary (interim distribution — see the oxc decision). Copied to the
+         output root as edgehop-oxc.exe and propagated to any referencing exe's output. -->
+    <None Include="tools\win-x64\edgehop-oxc.exe" Link="edgehop-oxc.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

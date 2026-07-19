@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Pluggable Roslyn (C#/Razor) extractor. Loaded reflectively by
+       EdgeHop.Core.ExtractorFactory as assembly 'EdgeHop.Roslyn'. Owns the MSBuild
+       dependency so Core and the indexer host never touch MSBuildWorkspace — the MSBuild
+       JIT-ordering rule stays contained here (MsBuildBootstrap registers the locator at the
+       extractor's ExtractAsync entry, before any MSBuildWorkspace type resolves). -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
+    <PackageReference Include="Microsoft.Build.Locator" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EdgeHop.Core\EdgeHop.Core.csproj" />
+  </ItemGroup>
+
+</Project>

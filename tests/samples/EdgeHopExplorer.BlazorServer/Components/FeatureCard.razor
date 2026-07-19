@@ -1,0 +1,18 @@
+@* A child component rendered by Home (a RENDERS edge). It shows two more graph facts:
+   an @Expr() invocation in markup (@Feature.Describe() -> a CALLS edge) and an @onclick handler
+   binding (@onclick="Select" -> another CALLS edge). Its [Parameter] properties REFERENCE IFeature. *@
+<div class="feature-card">
+    <strong>@Feature.Name</strong>
+    <div>@Feature.Describe()</div>
+    <button @onclick="Select">Select</button>
+</div>
+
+@code {
+    [Parameter]
+    public IFeature Feature { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<IFeature> OnSelect { get; set; }
+
+    private Task Select() => OnSelect.InvokeAsync(Feature);
+}

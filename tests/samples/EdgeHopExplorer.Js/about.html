@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>About — EdgeHop Explorer</title>
+</head>
+<body>
+    <h1>About EdgeHop</h1>
+    <p>
+        EdgeHop builds a queryable graph of a .NET + JavaScript solution from Roslyn's semantic
+        model and a native oxc parse of the JS/TS, then serves it to Claude Code over an MCP server —
+        so structural questions are answered from the graph instead of by grepping text.
+    </p>
+
+    <!-- Regression guard: a literal <script>function ghostFn(){}</script> written inside an HTML
+         comment must be treated as prose and skipped by oxc — it produces no module and no ghostFn
+         node. (Before the comment-aware discovery fix, this created a garbled, unparseable phantom
+         module.) -->
+
+    <!-- An inline block: its own module (about.html#0), with a resolved CALLS edge — greet calls
+         message. -->
+    <script>
+        function greet() {
+            return message();
+        }
+        function message() {
+            return "EdgeHop indexes structure, not text.";
+        }
+        console.log(greet());
+    </script>
+</body>
+</html>

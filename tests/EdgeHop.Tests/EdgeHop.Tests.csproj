@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The fixture solution under fixtures/ is opened by the extractor in tests;
+         it must never be compiled as part of this project. -->
+    <Compile Remove="fixtures/**" />
+    <None Remove="fixtures/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EdgeHop.Core\EdgeHop.Core.csproj" />
+    <!-- The extractor split: the Roslyn extraction types live in the Extractors/ plugin, the
+         app-shell (ExtractorApp/IndexCommand/WatchLoop/ChangeBatcher/hooks/worktree) in the
+         indexer host. Tests use types from both — both keep namespace EdgeHop.Roslyn. -->
+    <ProjectReference Include="..\..\Extractors\EdgeHop.Roslyn\EdgeHop.Roslyn.csproj" />
+    <!-- The JsFixture end-to-end anchor runs the real oxc extractor in-process; referencing it
+         here also deploys the vendored edgehop-oxc.exe next to the test assembly. -->
+    <ProjectReference Include="..\..\Extractors\EdgeHop.Oxc\EdgeHop.Oxc.csproj" />
+    <ProjectReference Include="..\..\EdgeHop.Indexer\EdgeHop.Indexer.csproj" />
+    <!-- The Sqlite* conformance/process/branch-resolver tests use SqliteSchema/SqliteSettings/
+         SqliteGraphStore, which moved out of Core into the pluggable backend assembly. -->
+    <ProjectReference Include="..\..\Backends\EdgeHop.Sqlite\EdgeHop.Sqlite.csproj" />
+  </ItemGroup>
+
+</Project>

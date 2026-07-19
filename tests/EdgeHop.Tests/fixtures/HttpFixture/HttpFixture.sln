@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpFixture.Api", "HttpFixture.Api\HttpFixture.Api.csproj", "{7A3B9F2E-1C4D-4E5F-9A6B-8C7D0E1F2A3B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpFixture.Web", "HttpFixture.Web\HttpFixture.Web.csproj", "{5D6E7F80-9A1B-4C2D-8E3F-4A5B6C7D8E9F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A3B9F2E-1C4D-4E5F-9A6B-8C7D0E1F2A3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A3B9F2E-1C4D-4E5F-9A6B-8C7D0E1F2A3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A3B9F2E-1C4D-4E5F-9A6B-8C7D0E1F2A3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A3B9F2E-1C4D-4E5F-9A6B-8C7D0E1F2A3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D6E7F80-9A1B-4C2D-8E3F-4A5B6C7D8E9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D6E7F80-9A1B-4C2D-8E3F-4A5B6C7D8E9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D6E7F80-9A1B-4C2D-8E3F-4A5B6C7D8E9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D6E7F80-9A1B-4C2D-8E3F-4A5B6C7D8E9F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

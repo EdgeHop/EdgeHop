@@ -1,0 +1,16 @@
+@typeparam T
+@* A generic component. Home and Features render it as an inferred-generic <TypedList Items="..."/>,
+   which the Razor compiler resolves (T = string) through a generated TypeInference helper — the
+   OpenComponent<TypedList<T>> in that helper is what produces the RENDERS edge to this component.
+   The type parameter T itself never yields a REFERENCES edge (type parameters are skipped). *@
+<ul class="typed-list">
+    @foreach (var item in Items)
+    {
+        <li>@item</li>
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<T> Items { get; set; } = [];
+}

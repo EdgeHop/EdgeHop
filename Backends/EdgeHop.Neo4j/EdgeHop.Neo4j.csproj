@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Pluggable Neo4j graph-store backend (opt-in via EDGEHOP_BACKEND=neo4j). Loaded
+       reflectively by EdgeHop.Core.GraphStoreFactory as assembly 'EdgeHop.Neo4j'. Owns
+       the Neo4j.Driver dependency so Core (and the default sqlite path) never touch it. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo4j.Driver" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EdgeHop.Core\EdgeHop.Core.csproj" />
+  </ItemGroup>
+
+</Project>

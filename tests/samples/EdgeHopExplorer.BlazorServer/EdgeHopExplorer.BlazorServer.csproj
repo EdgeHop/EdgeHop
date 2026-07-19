@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!--
+    EdgeHop Explorer — Blazor Server edition.
+
+    A runnable, self-documenting sample that exercises EVERY EdgeHop node kind and edge type
+    from a single C# tier: advanced C# structure (interfaces, inheritance, overrides, generics,
+    events, references), Blazor components (RENDERS / routes / isComponent), minimal-API endpoints
+    invoked over HttpClient (HTTP_CALLS), and bidirectional JS interop (JS_CALLS / JS_INVOKES) plus
+    plain JS symbol extraction (a standalone module and an inline <script>).
+
+    Package-free by design: the ASP.NET Core shared framework (Blazor, minimal APIs, IJSRuntime,
+    [JSInvokable], HttpClient) is resolved via the Microsoft.NET.Sdk.Web SDK's implicit
+    FrameworkReference — NO NuGet packages are added, honoring the repo's pinned-dependency rule.
+    A true Blazor *WebAssembly* host would need the Microsoft.AspNetCore.Components.WebAssembly
+    package, which is why this sample is Blazor *Server*: the component/interop graph the extractor
+    sees is identical either way.
+
+    ManagePackageVersionsCentrally=false opts this standalone sample out of the repo-root Central
+    Package Management, exactly like the fixtures under EdgeHop.Tests/fixtures. It is intentionally
+    NOT part of EdgeHop.sln; the tests open it from disk at runtime.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <!-- A design-time build of a sample must never fail the index over a transitive advisory. -->
+    <NuGetAudit>false</NuGetAudit>
+  </PropertyGroup>
+
+</Project>

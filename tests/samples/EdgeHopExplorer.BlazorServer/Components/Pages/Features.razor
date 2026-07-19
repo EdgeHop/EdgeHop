@@ -1,0 +1,44 @@
+@page "/features"
+@rendermode InteractiveServer
+@inject FeatureApiClient Api
+
+<h1>Features over the HTTP API</h1>
+
+<section class="panel">
+    <div class="panel-head">
+        <h2>The same data, fetched across a tier boundary</h2>
+        <span class="edge cross">HTTP_CALLS</span>
+    </div>
+    <p class="lead">
+        The <a href="/">Home</a> page reads the feature catalog straight from an in-memory service. This
+        page gets the <em>same</em> list the long way round: it calls a typed <code>HttpClient</code>
+        (<code>FeatureApiClient.GetAllAsync</code>), which issues <code>GET /api/features/all</code>
+        against this app’s <em>own</em> minimal API. EdgeHop matches that call to the endpoint by verb
+        and route shape and records an <span class="edge cross">HTTP_CALLS</span> edge — so
+        <code>get_callers</code> can trace this page through to <code>MapFeatureEndpoints</code> and on
+        into the catalog, even though no compile-time reference connects the two tiers.
+    </p>
+
+    @if (_names.Count == 0)
+    {
+        <p class="muted">Loading… (calling the API)</p>
+    }
+    else
+    {
+        @* Renders the generic list component -> a RENDERS edge Features -> TypedList. *@
+        <TypedList Items="_names" />
+    }
+</section>
+
+@code {
+    private IReadOnlyList<string> _names = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        // A CALLS to FeatureApiClient.GetAllAsync, whose body issues the GET that becomes an
+        // HTTP_CALLS edge to the endpoint method — so get_callers can trace
+        // Features.OnInitializedAsync -> GetAllAsync -> (HTTP_CALLS) -> MapFeatureEndpoints.
+        var features = await Api.GetAllAsync();
+        _names = features.Select(f => f.Name).ToList();
+    }
+}

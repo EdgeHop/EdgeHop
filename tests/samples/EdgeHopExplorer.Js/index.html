@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EdgeHop Explorer (JavaScript)</title>
+</head>
+<body>
+    <h1>EdgeHop Explorer</h1>
+    <p>
+        The pure HTML + JavaScript edition of the EdgeHop Explorer. It renders the same feature
+        catalog as the Blazor Server sample, but is built entirely from HTML pages, external
+        JavaScript modules that the browser pulls down, and inline script blocks — exactly the
+        surface the native <strong>oxc</strong> extractor indexes when EdgeHop graphs a non-.NET
+        project by folder (<code>edgehop-extract index &lt;dir&gt;</code>).
+    </p>
+
+    <ul id="features"></ul>
+
+    <!-- External modules are pulled down by src. oxc skips a src-referenced tag and instead
+         discovers and parses each referenced file on its own. -->
+    <script type="module" src="js/catalog.js"></script>
+    <script type="module" src="js/render.js"></script>
+
+    <!-- An inline module block: oxc extracts it as its own module (id ends with index.html#0),
+         with its own resolved CALLS edge — boot calls summarize. -->
+    <script type="module">
+        import { FEATURES, describeFeature } from "./js/catalog.js";
+        import { renderAll } from "./js/render.js";
+
+        function boot() {
+            return summarize(FEATURES);
+        }
+
+        function summarize(list) {
+            return list.length + " EdgeHop features";
+        }
+
+        document.getElementById("features").innerHTML = renderAll(FEATURES.map(describeFeature));
+        document.title = boot();
+    </script>
+</body>
+</html>

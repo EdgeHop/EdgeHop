@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>EdgeHop Explorer (Blazor Server)</title>
+    <link rel="icon" href="data:," />
+    @* Plain wwwroot stylesheet (presentation only) — a static asset served at /app.css that neither
+       extractor parses, so it does not touch the pinned graph. *@
+    <link rel="stylesheet" href="app.css" />
+    <HeadOutlet />
+</head>
+<body>
+    @* Site chrome (brand + nav) lives here as plain HTML rather than in a layout component: adding a
+       layout would be an eighth source component and change the pinned 122/179 graph. The nav uses
+       ordinary <a> anchors — Blazor's enhanced navigation upgrades them; the site title is a <span>,
+       not an <h1>, so FocusOnNavigate still lands on each PAGE's <h1>. *@
+    <header class="site-header">
+        <a class="brand" href="/"><span class="brand-mark">◆</span> EdgeHop Explorer</a>
+        <nav class="site-nav">
+            <a href="/">Home</a>
+            <a href="/features">Features</a>
+            <a href="/about">About</a>
+        </nav>
+    </header>
+
+    <main class="site-main">
+        @* <Routes /> is a source-declared component, so App -> Routes is a RENDERS edge. *@
+        <Routes />
+    </main>
+
+    <footer class="site-footer">
+        Everything on these pages is indexed by EdgeHop. Point the MCP server at this folder
+        (<code>EDGEHOP_REPO</code>) and ask Claude Code structural questions about it.
+    </footer>
+    @*
+        Both scripts are external (src="..."), which the oxc extractor deliberately SKIPS — the
+        referenced explorer.js is discovered and parsed as its own module instead. blazor.web.js
+        ships with the framework and is not part of this repo's tree.
+    *@
+    <script src="_framework/blazor.web.js"></script>
+    <script type="module" src="js/explorer.js"></script>
+    <script>
+        // Inline <script> in the host document — oxc parses it as its OWN inline module (a distinct
+        // Namespace node, id ends with App.razor#0) with its own resolved CALLS edge, separate from
+        // the external explorer.js above.
+        function ready(name) { return announce(name); }
+        function announce(name) { return name + " is ready"; }
+        window.__edgehopExplorerReady = ready("EdgeHop Explorer");
+    </script>
+</body>
+</html>

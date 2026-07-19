@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- edgehop-extract: the indexer host (app-shell). Owns verb dispatch, the load->extract->
+       reconcile orchestration, watch mode, git hooks and worktrees. It references NO MSBuild
+       and NO store driver: extractors and stores are reflection-loaded via EdgeHop.Core's
+       ExtractorFactory / GraphStoreFactory. The extractor + backend plugins are referenced
+       here only so they DEPLOY alongside the exe for load-by-name; no host code names their types. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>edgehop-extract</AssemblyName>
+    <RootNamespace>EdgeHop.Roslyn</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The JsFixture anchor drives the real merge+JS_CALLS derivation (BuildDesiredGraph). -->
+    <InternalsVisibleTo Include="EdgeHop.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EdgeHop.Core\EdgeHop.Core.csproj" />
+    <!-- Extractor plugins (deploy-only, reflection-loaded by ExtractorFactory). -->
+    <ProjectReference Include="..\Extractors\EdgeHop.Roslyn\EdgeHop.Roslyn.csproj" />
+    <ProjectReference Include="..\Extractors\EdgeHop.Oxc\EdgeHop.Oxc.csproj" />
+    <!-- Store backend plugins (deploy-only, reflection-loaded by GraphStoreFactory). -->
+    <ProjectReference Include="..\Backends\EdgeHop.Sqlite\EdgeHop.Sqlite.csproj" />
+    <ProjectReference Include="..\Backends\EdgeHop.Neo4j\EdgeHop.Neo4j.csproj" />
+  </ItemGroup>
+
+</Project>

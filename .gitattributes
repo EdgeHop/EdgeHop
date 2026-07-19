@@ -1,0 +1,32 @@
+# Normalize line endings: text files are stored with LF in the repository and
+# checked out with the platform-native convention. Windows-native script/solution
+# formats are pinned to CRLF so tooling that expects it keeps working.
+
+* text=auto
+
+*.sln  text eol=crlf
+*.ps1  text eol=crlf
+*.cmd  text eol=crlf
+*.bat  text eol=crlf
+
+# Explicitly text (LF) — source and project files
+*.cs      text eol=lf
+*.csproj  text eol=lf
+*.props   text eol=lf
+*.targets text eol=lf
+*.razor   text eol=lf
+*.json    text eol=lf
+*.md      text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+
+# Binary — never normalize or diff as text
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.snk binary
+*.dll binary
+*.exe binary
+*.pdb binary

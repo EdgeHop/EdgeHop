@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Throwaway HTTP-edge fixture (client tier). HttpClient + System.Net.Http.Json
+         ship in the base shared framework — no packages, no framework reference. NOTE:
+         deliberately NO ProjectReference to HttpFixture.Api — the tiers only meet over
+         HTTP, which is exactly the boundary the HTTP pass bridges. -->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+</Project>

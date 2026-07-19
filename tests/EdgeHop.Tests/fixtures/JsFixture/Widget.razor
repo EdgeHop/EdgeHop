@@ -1,0 +1,65 @@
+@page "/widget"
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<h1>Widget</h1>
+<p>@_result</p>
+<button @onclick="Refresh">Refresh</button>
+
+@code {
+    private IJSObjectReference? _module;
+    private string? _result;
+    private string _dynamicName = "computedAtRuntime";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Establishes _module -> ./js/widget.js (leaf "widget.js"), correlating the
+            // receiver of the calls below for precise module-scoped matching.
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/widget.js");
+        }
+    }
+
+    private async Task Refresh()
+    {
+        // Precise, module-correlated  => JS_CALLS to widget.js#getWidget.
+        _result = await _module!.InvokeAsync<string>("getWidget", 1);
+
+        // No export of this name       => NO edge.
+        await _module!.InvokeVoidAsync("noSuchFunction");
+
+        // Global runtime call, a name unique across the (discovered) JS => JS_CALLS to
+        // site.js#showAlert. Proves the minified/vendored duplicates are skipped, not matched.
+        await JS.InvokeVoidAsync("showAlert", _result);
+
+        // Non-constant identifier      => not statically knowable, NO site and NO edge.
+        await JS.InvokeVoidAsync(_dynamicName);
+
+        // ComponentBase render dispatcher (Microsoft.AspNetCore.Components), NOT
+        // Microsoft.JSInterop => never collected as an interop call.
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // The JS→C# targets: [JSInvokable] methods invoked from widget.js#wireCallbacks.
+
+    // Static: matched on (assembly "JsFixture", identifier "AddNumbers").
+    [JSInvokable]
+    public static int AddNumbers(int a, int b) => a + b;
+
+    // Instance: matched on the identifier "Notify".
+    [JSInvokable]
+    public void Notify(string message) => _result = message;
+
+    // Instance with an explicit identifier override: JS calls "CustomName", not "Renamed".
+    [JSInvokable("CustomName")]
+    public void Renamed() => _result = "renamed";
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+        }
+    }
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Features — EdgeHop Explorer</title>
+</head>
+<body>
+    <h1>Feature list</h1>
+    <p>Every node kind and edge type EdgeHop can index, catalogued.</p>
+
+    <!-- A minified vendor bundle pulled down by src. oxc skips *.min.js entirely: even though this
+         file exports a describeFeature(), it is never parsed, so the real describeFeature in
+         catalog.js stays the single, unambiguous node. -->
+    <script src="vendor/analytics.min.js"></script>
+
+    <!-- An inline block with no type attribute: still parsed by oxc as its own module
+         (features.html#0), with a resolved CALLS edge — track calls record. -->
+    <script>
+        function track(name) {
+            return record(name);
+        }
+        function record(name) {
+            return "tracked:" + name;
+        }
+        window.__lastTracked = track("features");
+    </script>
+</body>
+</html>

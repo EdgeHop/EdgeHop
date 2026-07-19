@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EdgeHop.Core\EdgeHop.Core.csproj" />
+    <ProjectReference Include="..\..\Backends\EdgeHop.Neo4j\EdgeHop.Neo4j.csproj" />
+    <!-- Extractor split (see EdgeHop.Tests.csproj): Roslyn extraction plugin + indexer host. -->
+    <ProjectReference Include="..\..\Extractors\EdgeHop.Roslyn\EdgeHop.Roslyn.csproj" />
+    <ProjectReference Include="..\..\EdgeHop.Indexer\EdgeHop.Indexer.csproj" />
+  </ItemGroup>
+
+  <!-- MSBuildWorkspace test plumbing shared with EdgeHop.Tests, LINKED (not duplicated)
+       so the extractor->Neo4j round-trip test can run the same in-process extraction the
+       general extractor tests do. Both test projects live side by side under tests/, so this
+       sibling path is unchanged by the move. The fixtures themselves stay under
+       EdgeHop.Tests/fixtures; FixtureTestSupport resolves them from either project's output. -->
+  <ItemGroup>
+    <Compile Include="..\EdgeHop.Tests\MsBuildTestCollection.cs" Link="Shared\MsBuildTestCollection.cs" />
+    <Compile Include="..\EdgeHop.Tests\FixtureTestSupport.cs" Link="Shared\FixtureTestSupport.cs" />
+  </ItemGroup>
+
+</Project>

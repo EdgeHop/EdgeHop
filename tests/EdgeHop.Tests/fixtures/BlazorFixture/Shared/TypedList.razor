@@ -1,0 +1,13 @@
+@typeparam T
+
+<ul>
+    @foreach (var item in Items ?? new List<T>())
+    {
+        <li>@item</li>
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public List<T>? Items { get; set; }
+}

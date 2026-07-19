@@ -1,0 +1,300 @@
+/* EdgeHop Explorer — presentation only.
+   This stylesheet is a plain wwwroot static asset: it is served at /app.css and is parsed by
+   neither the Roslyn nor the oxc extractor, so it has ZERO effect on the pinned 122/179 graph.
+   It exists solely to make the running sample read as an intentional, self-explaining tour. */
+
+:root {
+    --bg: #f7f7fb;
+    --surface: #ffffff;
+    --surface-2: #f1f2f8;
+    --text: #1b1d29;
+    --muted: #5c6070;
+    --border: #e2e3ee;
+    --accent: #4f46e5;        /* structural edges + primary actions */
+    --accent-soft: #ecebfb;
+    --accent-border: #cfcbf5;
+    --cross: #b45309;         /* cross-tier edges (HTTP_CALLS / JS_CALLS / JS_INVOKES) */
+    --cross-soft: #fbecd8;
+    --cross-border: #f0cfa0;
+    --code-bg: #eef0f6;
+    --shadow: 0 1px 2px rgba(20, 22, 40, .06), 0 4px 16px rgba(20, 22, 40, .05);
+    --mono: ui-monospace, "Cascadia Code", Consolas, "SF Mono", Menlo, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #14151c;
+        --surface: #1c1e28;
+        --surface-2: #232635;
+        --text: #e7e8f0;
+        --muted: #a2a6bb;
+        --border: #2e3140;
+        --accent: #a5b4fc;
+        --accent-soft: #262a44;
+        --accent-border: #3a3f66;
+        --cross: #fbbf77;
+        --cross-soft: #35291a;
+        --cross-border: #5c4526;
+        --code-bg: #262838;
+        --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
+    }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+/* ---- site chrome (brand + nav + footer, rendered by App.razor) ------------------- */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem 1rem;
+    padding: .75rem clamp(1rem, 4vw, 2.5rem);
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid var(--border);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -.01em;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.brand-mark { color: var(--accent); }
+
+.site-nav { display: flex; gap: .25rem; flex-wrap: wrap; }
+
+.site-nav a {
+    padding: .35rem .7rem;
+    border-radius: 7px;
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: .95rem;
+}
+
+.site-nav a:hover { background: var(--surface-2); color: var(--text); }
+
+.site-main {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 1rem;
+}
+
+.site-footer {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
+    color: var(--muted);
+    font-size: .9rem;
+    border-top: 1px solid var(--border);
+    margin-top: 1.5rem;
+}
+
+/* ---- typography ------------------------------------------------------------------ */
+
+h1 {
+    font-size: clamp(1.6rem, 4vw, 2.1rem);
+    letter-spacing: -.02em;
+    margin: 0 0 .75rem;
+}
+
+h2 { font-size: 1.15rem; letter-spacing: -.01em; margin: 0; }
+
+.lead { font-size: 1.05rem; color: var(--muted); max-width: 68ch; }
+
+.lead strong { color: var(--text); }
+
+.muted { color: var(--muted); }
+
+code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: var(--code-bg);
+    padding: .12em .4em;
+    border-radius: 5px;
+}
+
+/* ---- panels / sections ----------------------------------------------------------- */
+
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.4rem 1.4rem;
+    margin: 1.25rem 0;
+    box-shadow: var(--shadow);
+}
+
+.panel > p { max-width: 72ch; }
+
+.panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem .75rem;
+    margin-bottom: .35rem;
+}
+
+.panel-head .edge { margin-top: 0; }
+
+/* ---- edge + node chips ----------------------------------------------------------- */
+
+.edge, .chip {
+    display: inline-block;
+    font-size: .74rem;
+    font-weight: 600;
+    line-height: 1.4;
+    padding: .12rem .55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.edge {
+    font-family: var(--mono);
+    letter-spacing: .02em;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+}
+
+.edge.cross {
+    background: var(--cross-soft);
+    color: var(--cross);
+    border-color: var(--cross-border);
+}
+
+.chip {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.chip.mono { font-family: var(--mono); font-size: .78rem; }
+
+.chip-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .3rem 0 1rem; }
+
+/* ---- feature cards (Home) — styling the existing .feature-card markup ------------ */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: .9rem;
+    margin-top: 1rem;
+}
+
+.feature-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: .9rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+.feature-card strong { font-size: 1rem; }
+
+.feature-card > div { color: var(--muted); font-size: .9rem; flex: 1; }
+
+/* ---- generic list (TypedList) — styling the existing .typed-list markup ---------- */
+
+.typed-list {
+    list-style: none;
+    padding: 0;
+    margin: .75rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.typed-list li {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .3rem .75rem;
+    font-size: .92rem;
+}
+
+/* ---- interop round-trip (Home) --------------------------------------------------- */
+
+.steps { max-width: 72ch; margin: .5rem 0 1rem; padding-left: 1.25rem; }
+
+.steps li { margin: .35rem 0; }
+
+.status {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin: 1rem 0 0;
+    padding: .8rem 1rem;
+    background: var(--surface-2);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+}
+
+.status-label { font-weight: 600; color: var(--muted); font-size: .9rem; }
+
+.status code { background: var(--accent-soft); color: var(--accent); font-size: .95em; }
+
+/* ---- buttons --------------------------------------------------------------------- */
+
+button {
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: 1px solid transparent;
+    border-radius: 9px;
+    padding: .5rem 1rem;
+    cursor: pointer;
+    transition: filter .12s ease;
+}
+
+button:hover { filter: brightness(1.08); }
+
+button:active { filter: brightness(.94); }
+
+.feature-card button {
+    align-self: flex-start;
+    color: var(--accent);
+    background: transparent;
+    border-color: var(--accent-border);
+    padding: .3rem .8rem;
+    font-size: .85rem;
+}
+
+.feature-card button:hover { background: var(--accent-soft); filter: none; }
+
+/* ---- stats (About) --------------------------------------------------------------- */
+
+.stat-row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: .75rem; }
+
+.stat { display: flex; flex-direction: column; }
+
+.stat-num { font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; color: var(--accent); }
+
+.stat-cap { font-size: .82rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }

@@ -1,0 +1,9 @@
+@page "/multi"
+@page "/multi/{Id:int}"
+
+<p>Multi page, id: @Id</p>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+}

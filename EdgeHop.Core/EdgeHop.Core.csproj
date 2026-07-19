@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Core is store-driver-free: the SQLite and Neo4j drivers live in the pluggable
+         backend assemblies under Backends/ (loaded reflectively by GraphStoreFactory), so
+         nothing on the default sqlite path can JIT-resolve the Neo4j driver. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+  </ItemGroup>
+
+</Project>

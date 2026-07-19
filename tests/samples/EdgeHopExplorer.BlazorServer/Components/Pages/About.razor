@@ -1,0 +1,43 @@
+@page "/about"
+@page "/info"
+@* Two @page directives on one component -> its `routes` property is a two-element list
+   ["/about", "/info"]. Routable pages are reached at runtime by the Router (via routes), which is
+   why there is no RENDERS edge INTO a page — only page -> child-component RENDERS edges exist. *@
+
+<h1>About EdgeHop</h1>
+
+<p class="lead">
+    EdgeHop builds a queryable graph of a .NET + JavaScript solution from Roslyn’s semantic model
+    and a native oxc parse of the JS/TS, then serves it to Claude Code over an MCP server so it can
+    answer structural questions without grepping. This very app is the sample it indexes. (This page
+    is itself served by a component with two routes — <code>/about</code> and <code>/info</code> — so
+    its node carries both templates.)
+</p>
+
+@* The counts below are the pinned census (EXPECTED-GRAPH.md / EdgeHopExplorerBlazorTests). If the
+   contract ever changes deliberately, update these figures to match. *@
+<section class="panel">
+    <h2>This app, as EdgeHop sees it</h2>
+    <div class="stat-row">
+        <div class="stat"><span class="stat-num">122</span><span class="stat-cap">nodes</span></div>
+        <div class="stat"><span class="stat-num">179</span><span class="stat-cap">edges</span></div>
+        <div class="stat"><span class="stat-num">7</span><span class="stat-cap">components</span></div>
+        <div class="stat"><span class="stat-num">10</span><span class="stat-cap">edge types</span></div>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>What it records</h2>
+    <p>Six <strong>node kinds</strong> — the declarations in your code:</p>
+    <p class="chip-row">
+        <span class="chip">Namespace</span><span class="chip">NamedType</span><span class="chip">Method</span><span class="chip">Property</span><span class="chip">Field</span><span class="chip">Event</span>
+    </p>
+    <p>Ten <strong>edge types</strong> — how they relate. The last three cross a tier boundary:</p>
+    <p class="chip-row">
+        <span class="edge">CONTAINS</span><span class="edge">CALLS</span><span class="edge">IMPLEMENTS</span><span class="edge">INHERITS</span><span class="edge">REFERENCES</span><span class="edge">OVERRIDES</span><span class="edge">RENDERS</span><span class="edge cross">HTTP_CALLS</span><span class="edge cross">JS_CALLS</span><span class="edge cross">JS_INVOKES</span>
+    </p>
+    <p>Five <strong>query tools</strong>, exposed to Claude Code over MCP:</p>
+    <p class="chip-row">
+        <span class="chip mono">find_symbol</span><span class="chip mono">get_callers</span><span class="chip mono">get_relationships</span><span class="chip mono">get_path</span><span class="chip mono">graph_stats</span>
+    </p>
+</section>
