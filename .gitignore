@@ -508,6 +508,14 @@ msbuild.wrn
 *.sqlite
 *.sqlite3
 
+# The SQLite backend project dir ends in ".sqlite", which *.sqlite would swallow.
+# Keep the project sources tracked; only real DB files above are ignored.
+!Backends/EdgeHop.Sqlite/
+!Backends/EdgeHop.Sqlite/**
+# ...but still ignore this project's build outputs.
+Backends/EdgeHop.Sqlite/bin/
+Backends/EdgeHop.Sqlite/obj/
+
 # --- Local working / assistant files — kept on disk for the maintainer's own
 #     use but NOT part of the public project --------------------------------
 # Claude Code project instructions & MCP wiring (contain machine-specific paths).

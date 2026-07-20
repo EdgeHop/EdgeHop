@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Pluggable SQLite graph-store backend (the default). Loaded reflectively by
+       EdgeHop.Core.GraphStoreFactory as assembly 'EdgeHop.Sqlite'. Owns the
+       Microsoft.Data.Sqlite dependency so Core stays store-driver-free. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EdgeHop.Core\EdgeHop.Core.csproj" />
+  </ItemGroup>
+
+</Project>
