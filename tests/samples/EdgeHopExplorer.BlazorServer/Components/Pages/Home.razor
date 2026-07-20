@@ -6,15 +6,100 @@
 
 <h1>EdgeHop Explorer</h1>
 
-@* The 122 / 179 figures are the pinned census (see EXPECTED-GRAPH.md and
-   EdgeHopExplorerBlazorTests) — keep them in sync if the contract ever changes. *@
+@* The node/edge totals below (and in the stat row) are the pinned census — see EXPECTED-GRAPH.md
+   and EdgeHopExplorerBlazorTests. Keep every occurrence in sync if the contract changes. *@
 <p class="lead">
     A small but complete Blazor Server app whose whole job is to be <strong>indexed by EdgeHop</strong>.
     EdgeHop reads this project with Roslyn (C#/Razor) and a native oxc parser (JavaScript), builds a
-    graph of <strong>122 nodes and 179 edges</strong>, and serves it to Claude Code over MCP — so it can
-    answer “who calls this?” without grepping. Every widget below is a real, working feature <em>and</em>
-    a labeled demonstration of one graph relationship.
+    graph of <strong>126 nodes and 184 edges</strong> from your solution's semantic
+    model, and serves it to Claude Code over an MCP server — so it can answer “who calls this?”
+    structurally, without grepping. Every widget below is a real, working feature <em>and</em> a
+    labeled demonstration of one graph relationship. Press <strong>Select</strong> on any card (or the
+    interop button) to pop open exactly which nodes and edges that piece contributes.
 </p>
+
+@* ---- This app, as EdgeHop sees it (moved here from the old About page) ---------------- *@
+<section class="panel">
+    <h2>This app, as EdgeHop sees it</h2>
+    <div class="stat-row">
+        <div class="stat"><span class="stat-num">126</span><span class="stat-cap">nodes</span></div>
+        <div class="stat"><span class="stat-num">184</span><span class="stat-cap">edges</span></div>
+        <div class="stat"><span class="stat-num">7</span><span class="stat-cap">components</span></div>
+        <div class="stat"><span class="stat-num">10</span><span class="stat-cap">edge types</span></div>
+    </div>
+    <p class="muted">
+        EdgeHop builds a queryable graph of a .NET + JavaScript solution from Roslyn’s semantic model
+        and a native oxc parse of the JS/TS, then serves it to Claude Code over MCP so it can answer
+        structural questions without grepping. This very app is the sample it indexes.
+    </p>
+</section>
+
+@* ---- The legend: what each node kind, edge type, and query tool means -------------- *@
+<section class="panel">
+    <div class="panel-head">
+        <h2>Legend — how to read the graph</h2>
+    </div>
+    <p>
+        EdgeHop records your code as <strong>nodes</strong> (the declarations) joined by
+        <strong>edges</strong> (how they relate), and exposes <strong>query tools</strong> over that
+        graph. Here is what each one means.
+    </p>
+
+    <h3 class="legend-h">Six node kinds — the declarations in your code</h3>
+    <dl class="legend">
+        <dt><span class="chip">Namespace</span></dt>
+        <dd>A C# namespace <em>or</em> a JavaScript module file — the outermost container everything else nests inside.</dd>
+        <dt><span class="chip">NamedType</span></dt>
+        <dd>A class, interface, record, struct, enum, or delegate — and, in Blazor, every Razor component compiles to one.</dd>
+        <dt><span class="chip">Method</span></dt>
+        <dd>A method, constructor, or local function in C#; a function or class method in JavaScript.</dd>
+        <dt><span class="chip">Property</span></dt>
+        <dd>A get/set member — ordinary properties, component <code>[Parameter]</code>s, and injected services.</dd>
+        <dt><span class="chip">Field</span></dt>
+        <dd>A variable-like member: C# fields, <code>enum</code> members, and JavaScript <code>const</code> / class fields.</dd>
+        <dt><span class="chip">Event</span></dt>
+        <dd>A C# <code>event</code> member — the one node kind only this sample exercises (<code>FeatureCatalog.Registered</code>).</dd>
+    </dl>
+
+    <h3 class="legend-h">Ten edge types — how declarations relate</h3>
+    <p class="muted legend-note">The last three (in amber) cross a tier boundary that no compile-time reference can — EdgeHop reconstructs them by matching.</p>
+    <dl class="legend">
+        <dt><span class="edge">CONTAINS</span></dt>
+        <dd>Declaration nesting — a namespace contains its types, a type contains its members.</dd>
+        <dt><span class="edge">CALLS</span></dt>
+        <dd>One method invokes another, resolved through the compiler’s semantic model (not by text).</dd>
+        <dt><span class="edge">IMPLEMENTS</span></dt>
+        <dd>A type satisfies an interface it <em>directly</em> lists (interfaces reached only via a base class don’t re-emit).</dd>
+        <dt><span class="edge">INHERITS</span></dt>
+        <dd>A type derives from a base class.</dd>
+        <dt><span class="edge">REFERENCES</span></dt>
+        <dd>A signature names another authored type (parameter, return, field, or generic argument type).</dd>
+        <dt><span class="edge">OVERRIDES</span></dt>
+        <dd>An <code>override</code> member points back at the <code>virtual</code>/<code>abstract</code> it replaces.</dd>
+        <dt><span class="edge">RENDERS</span></dt>
+        <dd>A Razor component renders a source-declared child component in its markup.</dd>
+        <dt><span class="edge cross">HTTP_CALLS</span></dt>
+        <dd>An <code>HttpClient</code> call, matched to the API endpoint method that serves it by HTTP verb + route shape.</dd>
+        <dt><span class="edge cross">JS_CALLS</span></dt>
+        <dd>C# calling into a JavaScript export (<code>IJSRuntime.InvokeAsync</code> → a JS function).</dd>
+        <dt><span class="edge cross">JS_INVOKES</span></dt>
+        <dd>JavaScript calling back into C# (<code>DotNet.invoke*</code> → a <code>[JSInvokable]</code> method).</dd>
+    </dl>
+
+    <h3 class="legend-h">Five query tools — the MCP methods Claude Code calls</h3>
+    <dl class="legend">
+        <dt><span class="chip mono">find_symbol</span></dt>
+        <dd>Locate where a symbol is declared; component hits also report their route and <code>isComponent</code>.</dd>
+        <dt><span class="chip mono">get_callers</span></dt>
+        <dd>Who calls a method, up to N hops — following <code>CALLS</code>, <code>HTTP_CALLS</code>, <code>JS_CALLS</code>, and <code>JS_INVOKES</code> across tier boundaries.</dd>
+        <dt><span class="chip mono">get_relationships</span></dt>
+        <dd>Everything related to a symbol by any edge type, in a chosen direction.</dd>
+        <dt><span class="chip mono">get_path</span></dt>
+        <dd>The shortest directed path between two symbols — reachability and impact.</dd>
+        <dt><span class="chip mono">graph_stats</span></dt>
+        <dd>Per-branch orientation: totals, counts by kind and edge type, and the busiest “god” nodes.</dd>
+    </dl>
+</section>
 
 <section class="panel">
     <div class="panel-head">
@@ -27,8 +112,9 @@
         text is the feature’s own <code>Describe()</code> method evaluated in markup (a
         <span class="edge">CALLS</span> edge), and the cards happen to <em>document EdgeHop itself</em>:
         its node kinds, its edge types, and its query tools. Click <strong>Select</strong> to raise an
-        <code>EventCallback</code> up to this page (another bound <span class="edge">CALLS</span>) — the
-        feature’s description then appears in the status panel further down.
+        <code>EventCallback</code> up to this page (another bound <span class="edge">CALLS</span>) — a
+        popup then shows the feature’s <code>Describe()</code> output <em>and</em> exactly which nodes
+        and edges that card demonstrates.
     </p>
 
     <div class="card-grid">
@@ -56,6 +142,27 @@
     <TypedList Items="_areas" />
 </section>
 
+@* ---- Callout jumping to the Features page (the cross-tier HTTP story) --------------- *@
+<section class="panel callout">
+    <div class="panel-head">
+        <h2>Edges across the network boundary</h2>
+        <span class="edge cross">HTTP_CALLS</span>
+    </div>
+    <p>
+        Some calls leave one tier and re-enter another over HTTP, with <em>no</em> compile-time
+        reference tying the two ends together. EdgeHop still connects them: when a web page calls an
+        API through an <code>HttpClient</code>, EdgeHop matches that outgoing request to the endpoint
+        method that answers it — same HTTP verb, same route shape — and records an
+        <span class="edge cross">HTTP_CALLS</span> edge from the <strong>caller</strong> (the web
+        method making the request) to the <strong>callee</strong> (the endpoint serving it). That single
+        edge lets <code>get_callers</code> trace a button click on a page all the way through to the
+        server code that fulfils it.
+    </p>
+    <p>
+        <a class="jump" href="/features">See it live on the Features page →</a>
+    </p>
+</section>
+
 <section class="panel">
     <div class="panel-head">
         <h2>Cross-tier JavaScript interop</h2>
@@ -63,7 +170,8 @@
     </div>
     <p>
         This is the boundary no compile-time reference crosses — and the one EdgeHop reconstructs
-        anyway. Clicking the button runs a full round trip between the two tiers:
+        anyway. Clicking the button runs a full round trip between the two tiers, then pops open a
+        summary of the edges it exercised:
     </p>
     <ol class="steps">
         <li><strong>C# → JavaScript.</strong> This page calls <code>highlight()</code> and
@@ -83,11 +191,109 @@
     </p>
 </section>
 
+@* ---- The popup: an HTML/CSS modal driven purely by component state (no JS alert) ----- *@
+@if (_modalKey is not null)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal" @onclick:stopPropagation="true" role="dialog" aria-modal="true">
+            <div class="modal-head">
+                <h2>@_modalTitle</h2>
+                <button class="modal-close" @onclick="CloseModal" aria-label="Close">×</button>
+            </div>
+
+            @if (_detail is not null)
+            {
+                <p class="modal-output">
+                    <span class="status-label">Output</span>
+                    <code>@_detail</code>
+                </p>
+            }
+
+            <div class="modal-body">
+                @switch (_modalKey)
+                {
+                    case "Node kinds":
+                        <p>This card is the <code>NodeKindsFeature</code>. Selecting it evaluated its
+                            <code>Describe()</code> override — the string above — which is what the graph sees.</p>
+                        <p class="modal-sub">Nodes it demonstrates</p>
+                        <ul class="fact-list">
+                            <li><span class="chip">NamedType</span> <code>NodeKindsFeature</code> — a concrete feature class <span class="count">×1</span></li>
+                            <li><span class="chip">Method</span> its <code>Describe()</code> override and inherited <code>Prefix()</code> <span class="count">×2</span></li>
+                            <li><span class="chip">Field</span> the static <code>Kinds</code> array it lists <span class="count">×1</span></li>
+                        </ul>
+                        <p class="modal-sub">Edges it demonstrates</p>
+                        <ul class="fact-list">
+                            <li><span class="edge">INHERITS</span> <code>NodeKindsFeature → FeatureBase</code> <span class="count">×1</span></li>
+                            <li><span class="edge">IMPLEMENTS</span> <code>→ ISearchable</code> (its second, direct interface) <span class="count">×1</span></li>
+                            <li><span class="edge">OVERRIDES</span> <code>Describe() → FeatureBase.Describe()</code> <span class="count">×1</span></li>
+                            <li><span class="edge">CALLS</span> the override body calls inherited <code>Prefix()</code> <span class="count">×1</span></li>
+                        </ul>
+                        break;
+                    case "Edge types":
+                        <p>This card is the <code>EdgeTypesFeature</code>. Its <code>Describe()</code> override
+                            (above) lists all ten edge types EdgeHop can record.</p>
+                        <p class="modal-sub">Nodes it demonstrates</p>
+                        <ul class="fact-list">
+                            <li><span class="chip">NamedType</span> <code>EdgeTypesFeature</code> <span class="count">×1</span></li>
+                            <li><span class="chip">Method</span> its <code>Describe()</code> override <span class="count">×1</span></li>
+                        </ul>
+                        <p class="modal-sub">Edges it demonstrates</p>
+                        <ul class="fact-list">
+                            <li><span class="edge">INHERITS</span> <code>EdgeTypesFeature → FeatureBase</code> <span class="count">×1</span></li>
+                            <li><span class="edge">OVERRIDES</span> <code>Describe() → FeatureBase.Describe()</code> <span class="count">×1</span></li>
+                            <li><span class="edge">CALLS</span> override body calls inherited <code>Prefix()</code> <span class="count">×1</span></li>
+                        </ul>
+                        break;
+                    case "Query tools":
+                        <p>This card is the <code>QueryToolsFeature</code>. Its <code>Describe()</code> override
+                            (above) names the five MCP query tools.</p>
+                        <p class="modal-sub">Nodes it demonstrates</p>
+                        <ul class="fact-list">
+                            <li><span class="chip">NamedType</span> <code>QueryToolsFeature</code> <span class="count">×1</span></li>
+                            <li><span class="chip">Method</span> its <code>Describe()</code> override <span class="count">×1</span></li>
+                        </ul>
+                        <p class="modal-sub">Edges it demonstrates</p>
+                        <ul class="fact-list">
+                            <li><span class="edge">INHERITS</span> <code>QueryToolsFeature → FeatureBase</code> <span class="count">×1</span></li>
+                            <li><span class="edge">OVERRIDES</span> <code>Describe() → FeatureBase.Describe()</code> <span class="count">×1</span></li>
+                            <li><span class="edge">CALLS</span> override body calls inherited <code>Prefix()</code> <span class="count">×1</span></li>
+                        </ul>
+                        break;
+                    case "interop":
+                        <p>The button ran the full C#↔JavaScript round trip. The status value you now see
+                            below the button <em>originated in JavaScript</em> and travelled back into C#.</p>
+                        <p class="modal-sub">Edges it demonstrates</p>
+                        <ul class="fact-list">
+                            <li><span class="edge cross">JS_CALLS</span> <code>Home.Refresh() → explorer.js#highlight</code> and <code>→ #wireInterop</code> <span class="count">×2</span></li>
+                            <li><span class="edge cross">JS_INVOKES</span> <code>explorer.js#wireInterop → Home.Ping</code> and <code>→ Home.OnJsEvent</code> <span class="count">×2</span></li>
+                            <li><span class="edge">CALLS</span> <code>explorer.js#highlight → #decorate</code> (a JS-internal call) <span class="count">×1</span></li>
+                        </ul>
+                        <p class="modal-sub">Nodes it demonstrates</p>
+                        <ul class="fact-list">
+                            <li><span class="chip">Namespace</span> the <code>explorer.js</code> module <span class="count">×1</span></li>
+                            <li><span class="chip">Method</span> its <code>highlight</code> / <code>decorate</code> / <code>wireInterop</code> functions <span class="count">×3</span></li>
+                            <li><span class="chip">NamedType</span> the JS <code>Explorer</code> class <span class="count">×1</span></li>
+                        </ul>
+                        break;
+                }
+            </div>
+        </div>
+    </div>
+}
+
 @code {
+    // The 126 / 184 figures in the markup above are the pinned census (EXPECTED-GRAPH.md /
+    // EdgeHopExplorerBlazorTests) — keep them in sync if the contract ever changes.
     private readonly string[] _areas = ["Extraction", "Storage", "Query", "Interop"];
     private string _status = "idle";
     private IJSObjectReference? _module;
     private DotNetObjectReference<Home>? _selfRef;
+
+    // Modal state — a popup rendered from component state alone (no JS alert). _modalKey selects which
+    // authored explanation to show; _modalTitle / _detail carry its heading and the live output value.
+    private string? _modalKey;
+    private string? _modalTitle;
+    private string? _detail;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -107,12 +313,27 @@
 
         // JS_CALLS #2 — hand explorer.js our .NET reference so it can call back (see wireInterop).
         await _module!.InvokeVoidAsync("wireInterop", _selfRef);
+
+        // Open the popup describing the interop round trip; _status now holds the JS->C# value.
+        _detail = _status;
+        _modalTitle = "Cross-tier JavaScript interop";
+        _modalKey = "interop";
     }
 
     private void HandleSelect(IFeature feature)
     {
-        // A resolved CALLS to IFeature.Describe (bound as the child's OnSelect handler).
-        _status = feature.Describe();
+        // A resolved CALLS to IFeature.Describe (bound as the child's OnSelect handler). The result is
+        // the live output the popup presents, alongside the authored per-feature explanation.
+        _detail = feature.Describe();
+        _modalTitle = feature.Name;
+        _modalKey = feature.Name;
+    }
+
+    private void CloseModal()
+    {
+        _modalKey = null;
+        _modalTitle = null;
+        _detail = null;
     }
 
     // --- JS_INVOKES targets: explorer.js#wireInterop calls back into these two methods. ---

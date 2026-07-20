@@ -13,20 +13,28 @@ from a single Blazor Server tier.
 
 ## Totals
 
-**122 nodes / 179 edges.**
+**126 nodes / 184 edges.**
 
 | Node kind | count | | Edge type | count |
 |---|---|---|---|---|
-| Method    | 48 | | CONTAINS   | 118 |
+| Method    | 49 | | CONTAINS   | 122 |
 | NamedType | 28 | | REFERENCES | 25 |
-| Property  | 21 | | CALLS      | 16 |
-| Field     | 15 | | RENDERS    | 4 |
+| Property  | 21 | | CALLS      | 17 |
+| Field     | 18 | | RENDERS    | 4 |
 | Namespace | 9  | | HTTP_CALLS | 3 |
 | **Event** | **1** | | IMPLEMENTS | 3 |
 |           |    | | INHERITS   | 3 |
 |           |    | | OVERRIDES  | 3 |
 |           |    | | JS_CALLS   | 2 |
 |           |    | | JS_INVOKES | 2 |
+
+> **The `Home` popup state (added when the tour moved onto Home).** The Home page drives its
+> HTML/CSS explainer popups from component state alone (no JS alert): a `CloseModal` method (**+1
+> Method**) and three `string?` fields — `_modalKey`, `_modalTitle`, `_detail` (**+3 Field**) —
+> which the render tree contains (**+4 CONTAINS**) and whose close handler binds one call (**+1
+> CALLS**). That is the entire delta from the historical 122/179 census; every semantic-contract
+> count below (interop, HTTP, hierarchy, RENDERS, routes, the `Event` node) is unchanged. The
+> fields are plain `string?`, so they add no REFERENCES edge.
 
 > **What is pinned, and what is SDK-sensitive.** The **semantic contract** — the interop edges
 > (JS_CALLS / JS_INVOKES), HTTP_CALLS, the type-hierarchy edges (IMPLEMENTS / INHERITS / OVERRIDES),
@@ -90,7 +98,7 @@ Both originate in `explorer.js#wireInterop`, calling back into the component: th
 → `[JSInvokable] Home.OnJsEvent` (matched by unique identifier). The edge's `sourceDoc` is the JS
 calling document, `wwwroot/js/explorer.js`.
 
-### CALLS (16) / CONTAINS (118) / REFERENCES (25)
+### CALLS (17) / CONTAINS (122) / REFERENCES (25)
 Ordinary resolved calls (e.g. each override → `FeatureBase.Prefix`, the constructor → `Register` →
 `Registry<T>.Add`, Razor handler bindings, `@Feature.Describe()` in markup), containment, and type
 references (method/field/property/event signatures naming an authored type; generic arguments are

@@ -298,3 +298,163 @@ button:active { filter: brightness(.94); }
 .stat-num { font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; color: var(--accent); }
 
 .stat-cap { font-size: .82rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+
+/* ---- legend (Home) --------------------------------------------------------------- */
+
+.legend-h {
+    font-size: .98rem;
+    letter-spacing: -.01em;
+    margin: 1.4rem 0 .5rem;
+}
+
+.legend-note { font-size: .88rem; margin: 0 0 .6rem; }
+
+.legend {
+    display: grid;
+    grid-template-columns: minmax(120px, max-content) 1fr;
+    gap: .45rem 1rem;
+    align-items: baseline;
+    margin: 0 0 .5rem;
+}
+
+.legend dt { margin: 0; }
+
+.legend dd {
+    margin: 0;
+    color: var(--muted);
+    font-size: .93rem;
+}
+
+@media (max-width: 540px) {
+    .legend { grid-template-columns: 1fr; gap: .2rem 0; }
+    .legend dd { margin: 0 0 .5rem; }
+}
+
+/* ---- Features callout (Home) ----------------------------------------------------- */
+
+.callout {
+    border-left: 4px solid var(--cross);
+    background: color-mix(in srgb, var(--cross-soft) 45%, var(--surface));
+}
+
+.jump {
+    display: inline-block;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.jump:hover { text-decoration: underline; }
+
+/* ---- popup modal (Home) — HTML/CSS only, driven by component state ---------------- */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: clamp(1rem, 6vh, 4rem) 1rem;
+    overflow-y: auto;
+    background: rgba(20, 22, 40, .5);
+    backdrop-filter: blur(2px);
+    animation: overlay-in .12s ease;
+}
+
+@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+    width: min(560px, 100%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 12px 48px rgba(20, 22, 40, .35);
+    padding: 1.25rem 1.4rem 1.5rem;
+    animation: modal-in .14s ease;
+}
+
+@keyframes modal-in {
+    from { opacity: 0; transform: translateY(-8px) scale(.98); }
+    to { opacity: 1; transform: none; }
+}
+
+.modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: .5rem;
+}
+
+.modal-head h2 { font-size: 1.2rem; }
+
+.modal-close {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    line-height: 1;
+    font-size: 1.3rem;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.modal-close:hover { filter: none; background: var(--border); color: var(--text); }
+
+.modal-output {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin: 0 0 1rem;
+    padding: .7rem .9rem;
+    background: var(--surface-2);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+}
+
+.modal-output code { background: var(--accent-soft); color: var(--accent); }
+
+.modal-body > p { margin: .3rem 0; }
+
+.modal-sub {
+    font-weight: 600;
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+    margin: 1rem 0 .4rem !important;
+}
+
+.fact-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+
+.fact-list li {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .4rem;
+    font-size: .92rem;
+    color: var(--muted);
+}
+
+.count {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: .05rem .5rem;
+}

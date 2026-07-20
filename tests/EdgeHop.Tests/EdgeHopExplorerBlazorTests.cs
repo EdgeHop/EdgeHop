@@ -24,17 +24,17 @@ public sealed class EdgeHopExplorerBlazorTests
     [Fact]
     public void Graph_totals_match_the_pinned_contract()
     {
-        Assert.Equal(122, _fx.Graph.Nodes.Count);
-        Assert.Equal(179, _fx.Graph.Edges.Count);
+        Assert.Equal(126, _fx.Graph.Nodes.Count);
+        Assert.Equal(184, _fx.Graph.Edges.Count);
 
         var byKind = _fx.Graph.Nodes.GroupBy(n => n.Kind).ToDictionary(g => g.Key, g => g.Count());
         Assert.Equal(
             new Dictionary<string, int>
             {
-                [SymbolKinds.Method] = 48,
+                [SymbolKinds.Method] = 49,
                 [SymbolKinds.NamedType] = 28,
                 [SymbolKinds.Property] = 21,
-                [SymbolKinds.Field] = 15,
+                [SymbolKinds.Field] = 18,
                 [SymbolKinds.Namespace] = 9,
                 [SymbolKinds.Event] = 1,
             },
@@ -44,9 +44,9 @@ public sealed class EdgeHopExplorerBlazorTests
         Assert.Equal(
             new Dictionary<string, int>
             {
-                [EdgeTypes.Contains] = 118,
+                [EdgeTypes.Contains] = 122,
                 [EdgeTypes.References] = 25,
-                [EdgeTypes.Calls] = 16,
+                [EdgeTypes.Calls] = 17,
                 [EdgeTypes.Renders] = 4,
                 [EdgeTypes.HttpCalls] = 3,
                 [EdgeTypes.Implements] = 3,
