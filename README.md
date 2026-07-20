@@ -80,13 +80,19 @@ on demand from a feed.)
 `-gXXXX` commit suffix; a CI build with `-p:PublicRelease=true` off a release ref produces a
 clean version. Bump the base in `version.json` or `git tag vX.Y.Z` to cut a release.
 
-**Packing / publishing** (see `.github/workflows/ci.yml` for the automated path):
+**Packing** (see `.github/workflows/ci.yml` for the automated path):
 
 ```powershell
 dotnet pack EdgeHop.Tool\EdgeHop.Tool.csproj -c Release -p:PublicRelease=true
 #  -> artifacts\nuget\EdgeHop.<version>.nupkg
-dotnet nuget push artifacts\nuget\EdgeHop.*.nupkg -k <API_KEY> -s https://api.nuget.org/v3/index.json
 ```
+
+**Publishing** uses [NuGet Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
+(OIDC — no stored API key). A `v*` tag runs the CI `publish` job, which mints a GitHub OIDC
+token, exchanges it via `NuGet/login` for a 1-hour key, and pushes. One-time setup on
+nuget.org: create a Trusted Publishing policy with **Repository Owner** `EdgeHop`,
+**Repository** `EdgeHop`, **Workflow File** `ci.yml`, **Environment** `nuget`; and add a
+`NUGET_USER` secret (your nuget.org profile name) to the `nuget` environment.
 
 > **Fixture isolation:** the sample solutions under `tests/EdgeHop.Tests/fixtures/` and
 > `tests/samples/` are pristine, built independently at test time, and must NOT inherit the
