@@ -78,9 +78,16 @@ jobs:
         with:
           user: ${{ secrets.NUGET_USER }}
 
+      # Resolve the .nupkg explicitly: pwsh does not glob inside quotes and dotnet's own
+      # wildcard matcher is unreliable with forward-slash paths on the Windows runner, so
+      # a bare "artifacts/nuget/*.nupkg" fails with "File does not exist".
       - name: Push to nuget.org
-        run: >
-          dotnet nuget push "artifacts/nuget/*.nupkg"
-          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
-          --source https://api.nuget.org/v3/index.json
-          --skip-duplicate
+        shell: pwsh
+        run: |
+          $pkg = Get-ChildItem artifacts/nuget/*.nupkg | Select-Object -First 1
+          if (-not $pkg) { throw "No .nupkg found in artifacts/nuget" }
+          Write-Host "Pushing $($pkg.Name)"
+          dotnet nuget push $pkg.FullName `
+            --api-key ${{ steps.login.outputs.NUGET_API_KEY }} `
+            --source https://api.nuget.org/v3/index.json `
+            --skip-duplicate
