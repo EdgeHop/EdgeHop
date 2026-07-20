@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdgeHop.Indexer", "EdgeHop.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdgeHop.Oxc", "Extractors\EdgeHop.Oxc\EdgeHop.Oxc.csproj", "{590969DC-F7A6-4368-986D-D78F0A0A306C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdgeHop.Tool", "EdgeHop.Tool\EdgeHop.Tool.csproj", "{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +159,18 @@ Global
 		{590969DC-F7A6-4368-986D-D78F0A0A306C}.Release|x64.Build.0 = Release|Any CPU
 		{590969DC-F7A6-4368-986D-D78F0A0A306C}.Release|x86.ActiveCfg = Release|Any CPU
 		{590969DC-F7A6-4368-986D-D78F0A0A306C}.Release|x86.Build.0 = Release|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Debug|x64.Build.0 = Debug|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Debug|x86.Build.0 = Debug|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Release|x64.ActiveCfg = Release|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Release|x64.Build.0 = Release|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Release|x86.ActiveCfg = Release|Any CPU
+		{A13DB14A-6DAF-414E-91AB-B8E703F1A67C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

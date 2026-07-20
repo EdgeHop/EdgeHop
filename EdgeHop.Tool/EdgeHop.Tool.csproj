@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The single distributable: the `EdgeHop` .NET global tool. This project is a thin
+       dispatcher (Program.cs) over the three existing entry assemblies, packaged as ONE
+       tool command `edgehop`. .NET tools allow only one command per package, hence the
+       dispatcher rather than three commands. Version comes from Nerdbank.GitVersioning
+       (Directory.Build.props). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Distinct assembly name so the tool's own dll (EdgeHop.Tool.dll) does not collide
+         with the referenced query CLI's output (edgehop.dll). The user-facing command is
+         set by ToolCommandName, independent of the assembly name. -->
+    <AssemblyName>EdgeHop.Tool</AssemblyName>
+    <RootNamespace>EdgeHop.Tool</RootNamespace>
+
+    <!-- Tool packaging -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>edgehop</ToolCommandName>
+    <PackageId>EdgeHop</PackageId>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)..\artifacts\nuget</PackageOutputPath>
+
+    <!-- Package metadata -->
+    <Title>EdgeHop</Title>
+    <Authors>Michael Stoner</Authors>
+    <Description>EdgeHop code-graph tool: a Roslyn C#/Razor + native oxc JS/TS extractor feeding a pluggable graph store (SQLite default / Neo4j), plus an MCP server that exposes the graph to Claude Code. One `edgehop` command for indexing, querying, and serving.</Description>
+    <PackageTags>roslyn;code-graph;mcp;blazor;static-analysis;claude</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!-- Run on any installed 10.x runtime, tolerating patch/minor drift on the target box. -->
+    <RollForward>LatestMinor</RollForward>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- README shipped inside the package for the nuget.org listing. -->
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The three heads. Their outputs (including the reflection-loaded backend/extractor
+         plugins and the vendored native edgehop-oxc.exe) flow into this tool's publish
+         output and are packed by PackAsTool. -->
+    <ProjectReference Include="..\EdgeHop.Cli\EdgeHop.Cli.csproj" />
+    <ProjectReference Include="..\EdgeHop.Indexer\EdgeHop.Indexer.csproj" />
+    <ProjectReference Include="..\EdgeHop.Mcp\EdgeHop.Mcp.csproj" />
+  </ItemGroup>
+
+</Project>

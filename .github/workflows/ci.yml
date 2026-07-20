@@ -1,0 +1,72 @@
+name: CI
+
+# Build + test on every push/PR; a v* tag additionally packs with a clean (public-release)
+# version and pushes the EdgeHop global tool to nuget.org.
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # Windows only: the vendored edgehop-oxc binary is win-x64 and the exe/verb/stdio tests
+    # run the real Windows executables.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # Nerdbank.GitVersioning needs full history for git height.
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet build EdgeHop.sln -c Release
+
+      # EdgeHop.Neo4j.Tests need a live Neo4j (NEO4J_*), which CI does not provide — they
+      # skip themselves when unset. Running the main suite covers the 271 non-Neo4j tests,
+      # including the fixture/sample anchors and the unified-command dispatcher tests.
+      - name: Test
+        run: dotnet test tests/EdgeHop.Tests/EdgeHop.Tests.csproj -c Release --no-build --logger "trx;LogFileName=test-results.trx"
+
+      # Pack on every run to validate packaging. On a tag this is the release artifact;
+      # PublicRelease=true drops the local -gXXXX suffix so the pushed version is clean.
+      - name: Pack
+        run: dotnet pack EdgeHop.Tool/EdgeHop.Tool.csproj -c Release --no-build -p:PublicRelease=true
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EdgeHop-nupkg
+          path: artifacts/nuget/*.nupkg
+          if-no-files-found: error
+
+  publish:
+    # Push to nuget.org only for v* tags. Requires the NUGET_API_KEY repository secret.
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    environment: nuget
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: EdgeHop-nupkg
+          path: artifacts/nuget
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Push to nuget.org
+        run: >
+          dotnet nuget push "artifacts/nuget/*.nupkg"
+          --api-key "${{ secrets.NUGET_API_KEY }}"
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate

@@ -1,0 +1,8 @@
+<Project>
+  <!-- Isolation barrier (see the sibling Directory.Build.props). Stops MSBuild's upward
+       search for the repo's central-package-management manifest, so these sample solutions
+       resolve packages exactly as an independent clone would. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

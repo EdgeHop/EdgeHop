@@ -1,0 +1,10 @@
+<Project>
+
+  <!-- Repo-wide build defaults. Nerdbank.GitVersioning stamps every assembly's version
+       from git height + version.json (build-time only; PrivateAssets=all keeps it out of
+       the runtime/package closure). This is the version source for the NuGet global tool. -->
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

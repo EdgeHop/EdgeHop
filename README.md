@@ -34,6 +34,68 @@ foundation is solid.
 
 ---
 
+## Installation & distribution
+
+EdgeHop ships as a **single .NET global tool**, package id `EdgeHop`. It bundles all three
+heads — the indexer, the query CLI, and the MCP server — behind one `edgehop` command
+(.NET tool packages allow only one command per package, so the command is a thin dispatcher,
+`EdgeHop.Tool`, over the existing entry assemblies).
+
+```powershell
+# from nuget.org / a private feed, or a local folder feed:
+dotnet tool install -g EdgeHop
+dotnet tool update  -g EdgeHop     # later, to upgrade
+
+edgehop index <sln|dir> [--branch b] [--watch]   # was: edgehop-extract index
+edgehop find-symbol <query> [--json]             # + get-callers / get-relationships / get-path / stats
+edgehop mcp                                       # the stdio MCP server Claude Code launches
+edgehop --version
+```
+
+**Prerequisites on the target machine:** the **.NET 10 SDK/runtime**, and **Windows x64** —
+the JS/TS `edgehop-oxc` binary is a vendored win-x64 native, so the package runs only there.
+The default SQLite backend is embedded and credential-free, so nothing else is needed;
+Neo4j stays opt-in via `EDGEHOP_BACKEND=neo4j` + `NEO4J_*`.
+
+The package embeds everything the reflection loaders need: the `edgehop-oxc` native binary,
+all four extractor/backend plugins (`EdgeHop.Roslyn` / `EdgeHop.Oxc` / `EdgeHop.Sqlite` /
+`EdgeHop.Neo4j`), and the Roslyn MSBuild BuildHost. The three standalone exes
+(`edgehop.exe`, `edgehop-extract.exe`, `EdgeHop.Mcp.exe`) still build for the test suite,
+which drives them directly.
+
+**Wiring the MCP server** once installed — point `.mcp.json` at the tool command:
+
+```json
+{ "mcpServers": { "edgehop": {
+    "command": "edgehop", "args": ["mcp"],
+    "env": { "EDGEHOP_REPO": "C:\\path\\to\\your\\solution" } } } }
+```
+
+(Before a global install, `"command": "dnx", "args": ["edgehop", "mcp"]` resolves the tool
+on demand from a feed.)
+
+**Versioning** is [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning)
+(build-time only, `PrivateAssets=all`): the version comes from git height + `version.json`
+(base `0.1-alpha`; `main`/`master` are the public-release refs). Local builds carry a
+`-gXXXX` commit suffix; a CI build with `-p:PublicRelease=true` off a release ref produces a
+clean version. Bump the base in `version.json` or `git tag vX.Y.Z` to cut a release.
+
+**Packing / publishing** (see `.github/workflows/ci.yml` for the automated path):
+
+```powershell
+dotnet pack EdgeHop.Tool\EdgeHop.Tool.csproj -c Release -p:PublicRelease=true
+#  -> artifacts\nuget\EdgeHop.<version>.nupkg
+dotnet nuget push artifacts\nuget\EdgeHop.*.nupkg -k <API_KEY> -s https://api.nuget.org/v3/index.json
+```
+
+> **Fixture isolation:** the sample solutions under `tests/EdgeHop.Tests/fixtures/` and
+> `tests/samples/` are pristine, built independently at test time, and must NOT inherit the
+> repo's build customization. Barrier `Directory.Build.props` / `Directory.Packages.props`
+> files at each tree root stop MSBuild's upward search (so NBGV/CPM never leak in). Do not
+> remove them.
+
+---
+
 ## Solution layout
 
 ```
@@ -55,6 +117,9 @@ EdgeHop.sln
 │   └── EdgeHop.Neo4j       // the Neo4j store plugin (IGraphStoreProvider)
 ├── EdgeHop.Cli             // edgehop: thin query CLI (find-symbol / get-callers / …)
 ├── EdgeHop.Mcp             // MCP server Claude Code connects to (five tools)
+├── EdgeHop.Tool            // the single distributable: the `EdgeHop` .NET global tool.
+│                             // Thin dispatcher packing the three heads behind one `edgehop`
+│                             // command (index / find-symbol / … / mcp). See "Installation".
 └── tests/
     ├── EdgeHop.Tests       // xUnit; fixtures/ (Tiny / Blazor / Http / Js / JsFolder)
     ├── EdgeHop.Neo4j.Tests // live-Neo4j conformance (skipped unless NEO4J_* is set)
@@ -100,6 +165,9 @@ root, and reference packages without versions in each `.csproj`.
     <!-- MCP server (stable line; NOT the 2.0.0-preview) -->
     <PackageVersion Include="ModelContextProtocol" Version="1.4.1" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+
+    <!-- Build-time only: Git-height versioning for the global-tool package (PrivateAssets=all). -->
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.10.91" />
 
     <!-- Tests -->
     <PackageVersion Include="xunit" Version="2.9.2" />

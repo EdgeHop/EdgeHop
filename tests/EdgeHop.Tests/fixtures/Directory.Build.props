@@ -1,0 +1,7 @@
+<Project>
+  <!-- Isolation barrier. These fixtures are pristine, standalone sample solutions opened
+       from disk (and restored/built) at test time — they must NOT inherit the repo's build
+       customization (Nerdbank.GitVersioning, central package management, etc.). MSBuild stops
+       its upward Directory.Build.props search here, so nothing above the fixtures leaks in.
+       Intentionally empty. -->
+</Project>

@@ -1,0 +1,7 @@
+<Project>
+  <!-- Isolation barrier. The EdgeHopExplorer sample solutions are public, self-documenting
+       demo/regression targets opened from disk (and restored/built) at test time. They must
+       build exactly as a standalone clone would, so MSBuild stops its upward Directory.Build.props
+       search here — the repo's Nerdbank.GitVersioning / CPM customization never leaks in.
+       Intentionally empty. -->
+</Project>

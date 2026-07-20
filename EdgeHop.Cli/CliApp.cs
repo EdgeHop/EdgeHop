@@ -9,7 +9,7 @@ namespace EdgeHop.Cli;
 /// Query behavior lives entirely in <see cref="EdgeHopQueryService"/> (shared with the
 /// MCP server); this class must never reimplement validation, clamping or truncation.
 /// </summary>
-internal static class CliApp
+public static class CliApp
 {
     /// <summary>
     /// Branch when <c>--branch</c> is not given: the shared <see cref="BranchResolver"/>
