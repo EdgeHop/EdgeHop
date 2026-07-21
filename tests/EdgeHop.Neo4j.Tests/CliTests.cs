@@ -584,7 +584,7 @@ public sealed class CliTests : IClassFixture<CliProcessFixture>
             var home = hit.GetProperty("symbol");
             Assert.Equal(_fx.HomeComponentId, home.GetProperty("id").GetString());
             Assert.True(home.GetProperty("isComponent").GetBoolean());
-            var routes = home.GetProperty("routes").EnumerateArray().Select(r => r.GetString()).ToArray();
+            var routes = home.GetProperty("routes").EnumerateArray().Select(r => r.GetString()!).ToArray();
             Assert.Equal(_fx.HomeRoutes, routes);
         }
     }

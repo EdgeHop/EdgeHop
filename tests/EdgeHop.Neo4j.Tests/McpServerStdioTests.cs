@@ -686,7 +686,7 @@ public sealed class McpServerStdioTests : IClassFixture<McpServerFixture>
         Assert.True(home.GetProperty("isComponent").GetBoolean());
         Assert.Equal(
             new[] { "/", "/home" },
-            home.GetProperty("routes").EnumerateArray().Select(r => r.GetString()).ToArray());
+            home.GetProperty("routes").EnumerateArray().Select(r => r.GetString()!).ToArray());
 
         // The non-routable component: isComponent true, but routes is null so it is OMITTED
         // from the wire shape (WhenWritingNull), not emitted as an empty array.
