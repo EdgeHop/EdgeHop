@@ -26,6 +26,10 @@ C#-to-JavaScript interop bridge.
 > `pure HTML/JavaScript/TypeScript` project with no .NET at all. Additional languages and
 > project types are added through extractor plugins.
 
+<!-- Demo GIF: regenerate with `vhs Assets/demo.tape` (see working/DEMO-GIF.md). -->
+<p align="center">
+  <img src="https://raw.githubusercontent.com/EdgeHop/EdgeHop/main/Assets/Images/demo.gif" alt="EdgeHop tracing a Blazor UI handler across the HTTP boundary to its API endpoint" width="100%">
+</p>
 
 ---
 
