@@ -23,9 +23,12 @@ from the compiler's own semantic model — including across the C#-to-JavaScript
 
 ## What it does
 
-- **Indexes** a `.sln` (or a plain project directory) into a code graph: C# symbols from
+- **Indexes** a `.sln` — or any project directory — into a code graph: C# symbols from
   Roslyn's semantic model, and JavaScript/TypeScript symbols from a native
-  [oxc](https://oxc.rs) parse — merged into one graph per git branch.
+  [oxc](https://oxc.rs) parse — merged into one graph per git branch. .NET is the primary
+  focus, but the target need not be a .NET project at all: point it at a pure HTML/JS/TS
+  tree (no `.sln`, no Visual Studio, no .NET involved) and the oxc extractor graphs it while
+  the Roslyn extractor simply no-ops.
 - **Captures real relationships**, not text matches: calls, interface implementations,
   inheritance, overrides, type references, containment, Blazor component rendering, and two
   cross-tier bridges — HTTP client-to-endpoint calls and bidirectional C#↔JS interop.
@@ -59,13 +62,23 @@ Beyond that, three things are unusual:
   your machine. No shared server, no credentials, no telemetry. Switch branches and the next
   query reflects it.
 - **Pluggable storage and extractors.** SQLite by default (embedded, zero-config), Neo4j
-  optional. The C# and JS extractors are independent plugins.
+  optional. The C# and JS/TS extractors are independent, reflection-loaded plugins — the
+  same seam is how support for **other languages and project types** will be added over time,
+  without changing the core or the query surface.
 
 ## Requirements
 
 - **.NET 10 SDK/runtime**
-- **Windows x64** — the bundled `edgehop-oxc` JS/TS parser is a native win-x64 binary
+- **Windows x64** — the *only* platform-specific dependency is the bundled `edgehop-oxc`
+  JS/TS parser, which is currently a native win-x64 binary. Everything else is portable .NET.
+  See [Roadmap](#roadmap) — a platform-independent oxc parser is planned, which will remove
+  the Windows/x64 requirement.
 - No database or credentials for the default SQLite backend. Neo4j is opt-in.
+
+> **Project types.** EdgeHop is built .NET-first, but it is not limited to .NET. Any
+> directory works as a target: a `.sln`/`.csproj` solution, a mixed C#+JS/TS Blazor app, or a
+> pure HTML/JavaScript/TypeScript project with no .NET at all. Additional languages and
+> project types are added through extractor plugins.
 
 ## Installation
 
@@ -180,6 +193,14 @@ Extraction is whole-solution; storage is incremental — each index run reconcil
 graph against the stored one for that branch and applies only the difference. Stores and
 extractors are reflection-loaded plugins, so neither the core nor the host depends on a
 specific database driver or on MSBuild.
+
+## Roadmap
+
+- **Platform-independent JS/TS parser.** The one thing tying EdgeHop to Windows/x64 today is
+  the native `edgehop-oxc` binary. A cross-platform oxc parser is planned, which will remove
+  the win-x64 requirement and let EdgeHop run anywhere .NET 10 does.
+- **More extractor plugins.** The reflection-loaded extractor seam is designed to grow beyond
+  C# and JS/TS to additional languages and project types.
 
 ## Contributing
 
