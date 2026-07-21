@@ -1,8 +1,14 @@
-# EdgeHop — Stop grepping. Start knowing.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/EdgeHop/EdgeHop/main/Assets/Images/edgehop-title.svg" alt="EdgeHop" width="460">
+</p>
 
-[![CI](https://github.com/EdgeHop/EdgeHop/actions/workflows/ci.yml/badge.svg)](https://github.com/EdgeHop/EdgeHop/actions/workflows/ci.yml)
-[![NuGet](https://img.shields.io/nuget/vpre/EdgeHop.svg)](https://www.nuget.org/packages/EdgeHop)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+<h3 align="center">Stop grepping. Start knowing.</h3>
+
+<p align="center">
+  <a href="https://github.com/EdgeHop/EdgeHop/actions/workflows/ci.yml"><img src="https://github.com/EdgeHop/EdgeHop/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://www.nuget.org/packages/EdgeHop"><img src="https://img.shields.io/nuget/vpre/EdgeHop.svg" alt="NuGet"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0"></a>
+</p>
 
 **A code graph for your .NET solution that an AI coding assistant can query instead of grepping.**
 

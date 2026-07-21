@@ -29,6 +29,7 @@
     <PackageTags>roslyn;code-graph;mcp;blazor;static-analysis;claude</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
 
     <!-- Run on any installed 10.x runtime, tolerating patch/minor drift on the target box. -->
     <RollForward>LatestMinor</RollForward>
@@ -37,6 +38,9 @@
   <ItemGroup>
     <!-- README shipped inside the package for the nuget.org listing. -->
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <!-- Package icon (nuget.org listing). Must be a raster; SVG is not supported, so the
+         PNG avatar is packed as icon.png at the package root. -->
+    <None Include="..\Assets\Images\bunny-avatar.png" Pack="true" PackagePath="icon.png" />
   </ItemGroup>
 
   <ItemGroup>
