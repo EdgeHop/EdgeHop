@@ -10,14 +10,18 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0"></a>
 </p>
 
-**A code graph for your .NET solution that an AI coding assistant can query instead of grepping.**
-
-EdgeHop builds an accurate, durable graph of the symbols in a .NET solution — and the
+EdgeHop builds an accurate, durable graph of the symbols in a solution — and the
 relationships between them — then serves it to an AI assistant over the
 [Model Context Protocol (MCP)](https://modelcontextprotocol.io). Instead of guessing at
 call chains from text search, your assistant asks *"who calls this method?"*, *"what
 implements this interface?"*, or *"what breaks if I change this?"* and gets answers derived
 from the compiler's own semantic model — including across the C#-to-JavaScript boundary.
+
+> **Project types.** EdgeHop is built .NET-first, but it is not limited to .NET. Any
+> directory works as a target: a `.sln`/`.csproj` solution, a mixed C#+JS/TS Blazor app, or a
+> `pure HTML/JavaScript/TypeScript` project with no .NET at all. Additional languages and
+> project types are added through extractor plugins.
+
 
 ---
 
