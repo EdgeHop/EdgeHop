@@ -18,7 +18,8 @@ so a call, an implementation, or a reference is the *actual* one the compiler bi
 name that happens to look alike. Instead of guessing at call chains from text search, your
 assistant asks *"who calls this method?"*, *"what implements this interface?"*, or *"what
 breaks if I change this?"* and gets answers grounded in that semantic understanding —
-including across the C#-to-JavaScript boundary.
+including across tier boundaries the compiler can't cross: the Web-to-API HTTP call and the
+C#-to-JavaScript interop bridge.
 
 > **Project types.** EdgeHop is built .NET-first, but it is not limited to .NET. Any
 > directory works as a target: a `.sln`/`.csproj` solution, a mixed C#+JS/TS Blazor app, or a
