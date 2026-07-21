@@ -27,7 +27,7 @@
     <Authors>Michael Stoner</Authors>
     <Description>EdgeHop code-graph tool: a Roslyn C#/Razor + native oxc JS/TS extractor feeding a pluggable graph store (SQLite default / Neo4j), plus an MCP server that exposes the graph to Claude Code. One `edgehop` command for indexing, querying, and serving.</Description>
     <PackageTags>roslyn;code-graph;mcp;blazor;static-analysis;claude</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <!-- Run on any installed 10.x runtime, tolerating patch/minor drift on the target box. -->

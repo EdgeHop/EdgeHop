@@ -536,3 +536,6 @@ CLAUDE.md
 .claude/
 # Internal build handoff / design-log documents:
 HANDOFF-*.md
+
+# Local-only working directory: architecture/spec + process docs, never published.
+working/
