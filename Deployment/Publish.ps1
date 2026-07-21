@@ -106,7 +106,9 @@ try {
     # PublicRelease=true (which CI passes) strips the -gXXXX suffix nbgv reports locally.
     $publicVersion = $version.SimpleVersion + '-' + $version.PrereleaseVersion.TrimStart('-')
     if (-not $version.PrereleaseVersion) { $publicVersion = $version.SimpleVersion }
-    $tag = 'v' + $version.SimpleVersion
+    # 'nbgv tag' names the tag after the FULL version, prerelease label included
+    # (v0.1.22-alpha, not v0.1.22) — the push refspec must match that exactly.
+    $tag = 'v' + $publicVersion
 
     Write-Host ''
     Write-Host "  Branch:          $branch @ $($version.GitCommitId.Substring(0,7))"
