@@ -12,10 +12,13 @@
 
 EdgeHop builds an accurate, durable graph of the symbols in a solution — and the
 relationships between them — then serves it to an AI assistant over the
-[Model Context Protocol (MCP)](https://modelcontextprotocol.io). Instead of guessing at
-call chains from text search, your assistant asks *"who calls this method?"*, *"what
-implements this interface?"*, or *"what breaks if I change this?"* and gets answers derived
-from the compiler's own semantic model — including across the C#-to-JavaScript boundary.
+[Model Context Protocol (MCP)](https://modelcontextprotocol.io). It doesn't match text; it
+understands code. Every relationship is resolved from the compiler's own **semantic model**,
+so a call, an implementation, or a reference is the *actual* one the compiler binds — not a
+name that happens to look alike. Instead of guessing at call chains from text search, your
+assistant asks *"who calls this method?"*, *"what implements this interface?"*, or *"what
+breaks if I change this?"* and gets answers grounded in that semantic understanding —
+including across the C#-to-JavaScript boundary.
 
 > **Project types.** EdgeHop is built .NET-first, but it is not limited to .NET. Any
 > directory works as a target: a `.sln`/`.csproj` solution, a mixed C#+JS/TS Blazor app, or a
@@ -58,10 +61,12 @@ deliberately avoids both:
 
 Beyond that, three things are unusual:
 
-- **Cross-tier edges.** EdgeHop links a Web-tier `HttpClient` call to the C# method that
-  serves the matching endpoint, and links C#↔JavaScript interop in *both* directions
-  (`IJSRuntime.InvokeAsync` → JS export, and JS `DotNet.invoke*` → `[JSInvokable]`). Call
-  chains stay walkable straight across boundaries a compiler can't cross.
+- **Cross-tier edges.** Call chains stay walkable straight across boundaries a compiler
+  can't cross:
+  - **Web tier → API.** A Web-tier `HttpClient` call is linked to the C# method that serves
+    the matching endpoint (by verb + route template).
+  - **C# ↔ JavaScript interop, both directions.** `IJSRuntime.InvokeAsync` → the JS export it
+    invokes, and JS `DotNet.invoke*` → the `[JSInvokable]` C# method it targets.
 - **Branch-aware and local-first.** The graph is scoped per git branch and lives entirely on
   your machine. No shared server, no credentials, no telemetry. Switch branches and the next
   query reflects it.
