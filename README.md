@@ -79,10 +79,10 @@ Beyond that, three things are unusual:
 ## Requirements
 
 - **.NET 10 SDK/runtime**
-- **Windows x64** — the *only* platform-specific dependency is the bundled `edgehop-oxc`
-  JS/TS parser, which is currently a native win-x64 binary. Everything else is portable .NET.
-  See [Roadmap](#roadmap) — a platform-independent oxc parser is planned, which will remove
-  the Windows/x64 requirement.
+- **win-x64, linux-x64, or osx-arm64** — the *only* platform-specific dependency is the
+  bundled `edgehop-oxc` JS/TS parser, a native binary shipped for those three platforms.
+  Everything else is portable .NET. See [Roadmap](#roadmap) — a platform-independent oxc
+  parser is planned, which will drop the native-binary requirement entirely.
 - No database or credentials for the default SQLite backend. Neo4j is opt-in.
 
 > **Project types.** EdgeHop is built .NET-first, but it is not limited to .NET. Any
@@ -268,9 +268,9 @@ shape.
 
 ## Roadmap
 
-- **Platform-independent JS/TS parser.** The one thing tying EdgeHop to Windows/x64 today is
-  the native `edgehop-oxc` binary. A cross-platform oxc parser is planned, which will remove
-  the win-x64 requirement and let EdgeHop run anywhere .NET 10 does.
+- **Platform-independent JS/TS parser.** EdgeHop ships the native `edgehop-oxc` binary for
+  win-x64, linux-x64, and osx-arm64 today. A cross-platform oxc parser is planned, which will
+  drop the native-binary requirement entirely and let EdgeHop run anywhere .NET 10 does.
 - **More extractor plugins.** The reflection-loaded extractor seam is designed to grow beyond
   C# and JS/TS to additional languages and project types.
 

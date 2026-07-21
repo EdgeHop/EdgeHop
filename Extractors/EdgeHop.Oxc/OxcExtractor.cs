@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using EdgeHop.Core;
@@ -16,7 +17,9 @@ namespace EdgeHop.Oxc;
 /// </summary>
 public sealed class OxcExtractor : IExtractor
 {
-    private const string BinaryName = "edgehop-oxc.exe";
+    /// <summary>The native binary's file name — <c>.exe</c> on Windows, bare elsewhere.</summary>
+    private static string BinaryName =>
+        RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "edgehop-oxc.exe" : "edgehop-oxc";
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -121,11 +124,69 @@ public sealed class OxcExtractor : IExtractor
     private static ExtractionOutcome Empty(string description, long loadMs) =>
         new(new ExtractionResult([], []), [], [], description, loadMs, 0);
 
-    /// <summary>The vendored native binary deployed next to the running executable.</summary>
+    /// <summary>Locates the vendored native binary for the running RID: the RID-scoped
+    /// <c>runtimes/&lt;rid&gt;/native/</c> path first (the multi-RID deploy layout), then the flat
+    /// <see cref="AppContext.BaseDirectory"/> path (the legacy single-RID deploy). On Unix the
+    /// executable bit is ensured belt-and-suspenders alongside CI's chmod.</summary>
     private static string? LocateBinary()
     {
-        var candidate = Path.Combine(AppContext.BaseDirectory, BinaryName);
-        return File.Exists(candidate) ? candidate : null;
+        var name = BinaryName;
+        var runtimes = Path.Combine(AppContext.BaseDirectory, "runtimes");
+
+        // The RID we deploy under is the portable one (win-x64 / linux-x64 / osx-arm64), but
+        // RuntimeInformation.RuntimeIdentifier can report a version-specific variant (e.g.
+        // win10-x64), so probe the reported RID first, then a portable RID computed from the OS
+        // + process architecture, then the flat legacy path.
+        var candidates = new List<string>
+        {
+            Path.Combine(runtimes, RuntimeInformation.RuntimeIdentifier, "native", name),
+            Path.Combine(runtimes, PortableRid(), "native", name),
+            Path.Combine(AppContext.BaseDirectory, name),
+        };
+
+        foreach (var candidate in candidates)
+        {
+            if (File.Exists(candidate))
+            {
+                EnsureExecutable(candidate);
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>The portable RID (os-arch) for the running process — the folder layout under
+    /// <c>runtimes/</c>. Covers the three shipped RIDs; other OS/arch pairs still fall through to
+    /// the flat legacy path.</summary>
+    private static string PortableRid()
+    {
+        var os = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win"
+            : RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "osx"
+            : "linux";
+        var arch = RuntimeInformation.ProcessArchitecture switch
+        {
+            Architecture.X64 => "x64",
+            Architecture.Arm64 => "arm64",
+            Architecture.X86 => "x86",
+            var other => other.ToString().ToLowerInvariant(),
+        };
+        return $"{os}-{arch}";
+    }
+
+    /// <summary>Adds the owner-execute bit on Unix if it is not already set; a no-op on Windows.</summary>
+    private static void EnsureExecutable(string path)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return;
+        }
+
+        var mode = File.GetUnixFileMode(path);
+        if ((mode & UnixFileMode.UserExecute) == 0)
+        {
+            File.SetUnixFileMode(path, mode | UnixFileMode.UserExecute);
+        }
     }
 
     private static async Task<OxcResponse> RunBinaryAsync(

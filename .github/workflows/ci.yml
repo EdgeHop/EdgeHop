@@ -14,14 +14,81 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Cross-compile the native edgehop-oxc binary for all three shipped RIDs. Only win-x64 is
+  # committed to the repo; linux-x64 and osx-arm64 are produced here and bundled into the pack.
+  oxc:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            triple: x86_64-pc-windows-gnu
+            rid: win-x64
+            binary: edgehop-oxc.exe
+          - os: ubuntu-latest
+            triple: x86_64-unknown-linux-gnu
+            rid: linux-x64
+            binary: edgehop-oxc
+          - os: macos-14
+            triple: aarch64-apple-darwin
+            rid: osx-arm64
+            binary: edgehop-oxc
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust target
+        shell: bash
+        run: |
+          rustup toolchain install stable --profile minimal
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            rustup toolchain install stable-x86_64-pc-windows-gnu --profile minimal
+          fi
+          rustup target add ${{ matrix.triple }}
+
+      - name: Build edgehop-oxc
+        working-directory: Extractors/EdgeHop.Oxc/native
+        run: cargo build --release --target ${{ matrix.triple }}
+
+      - name: Mark Unix binary executable
+        if: matrix.os != 'windows-latest'
+        run: chmod +x Extractors/EdgeHop.Oxc/native/target/${{ matrix.triple }}/release/${{ matrix.binary }}
+
+      - name: Upload oxc binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: oxc-${{ matrix.rid }}
+          path: Extractors/EdgeHop.Oxc/native/target/${{ matrix.triple }}/release/${{ matrix.binary }}
+          if-no-files-found: error
+
   build:
-    # Windows only: the vendored edgehop-oxc binary is win-x64 and the exe/verb/stdio tests
-    # run the real Windows executables.
+    # Build/test/pack on Windows (the exe/verb/stdio tests run the real Windows executables).
+    # All three RIDs of the native edgehop-oxc binary (win-x64, linux-x64, osx-arm64) are built
+    # by the oxc job and downloaded into tools/<rid>/ below so the packed tool bundles all three.
+    needs: [oxc]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0        # Nerdbank.GitVersioning needs full history for git height.
+
+      - name: Download win-x64 oxc binary
+        uses: actions/download-artifact@v4
+        with:
+          name: oxc-win-x64
+          path: Extractors/EdgeHop.Oxc/tools/win-x64
+
+      - name: Download linux-x64 oxc binary
+        uses: actions/download-artifact@v4
+        with:
+          name: oxc-linux-x64
+          path: Extractors/EdgeHop.Oxc/tools/linux-x64
+
+      - name: Download osx-arm64 oxc binary
+        uses: actions/download-artifact@v4
+        with:
+          name: oxc-osx-arm64
+          path: Extractors/EdgeHop.Oxc/tools/osx-arm64
 
       - uses: actions/setup-dotnet@v4
         with:

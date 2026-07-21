@@ -2,8 +2,9 @@
 
   <!-- Pluggable oxc (JS/TS) extractor. Loaded reflectively by EdgeHop.Core.ExtractorFactory
        as assembly 'EdgeHop.Oxc'. Shells out to the vendored native edgehop-oxc binary
-       (built from native/ with the Rust gnu toolchain) — no Node runtime. The binary is
-       committed under tools/ and copied next to the consuming exe so it deploys transitively. -->
+       (built from native/ with the Rust gnu toolchain) — no Node runtime. The binaries are
+       committed/CI-built per RID under tools/<rid>/ and copied into runtimes/<rid>/native/ next
+       to the consuming exe so they deploy transitively; OxcExtractor picks the running RID. -->
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -15,9 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Vendored native binary (interim distribution — see the oxc decision). Copied to the
-         output root as edgehop-oxc.exe and propagated to any referencing exe's output. -->
-    <None Include="tools\win-x64\edgehop-oxc.exe" Link="edgehop-oxc.exe">
+    <!-- Vendored native binaries, one per RID under tools/<rid>/. Each is linked into
+         runtimes/<rid>/native/ in the output (and propagated to any referencing exe's output
+         and into the packed tool), the RID-aware convention OxcExtractor.LocateBinary probes.
+         win-x64 is committed; linux-x64 / osx-arm64 are dropped in by CI before build/pack. -->
+    <None Include="tools\**\edgehop-oxc*" Link="runtimes\%(RecursiveDir)native\%(Filename)%(Extension)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
