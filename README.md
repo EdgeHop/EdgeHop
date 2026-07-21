@@ -282,3 +282,8 @@ and submit changes.
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
+
+Built on [oxc](https://github.com/oxc-project/oxc) (JS/TS parsing) and
+[Roslyn](https://github.com/dotnet/roslyn) (C#/Razor analysis). Bundled
+third-party components and their licenses are listed in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
