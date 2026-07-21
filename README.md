@@ -194,6 +194,68 @@ graph against the stored one for that branch and applies only the difference. St
 extractors are reflection-loaded plugins, so neither the core nor the host depends on a
 specific database driver or on MSBuild.
 
+## A worked example
+
+The commands below run against the in-repo sample Blazor Server app at
+`tests/samples/EdgeHopExplorer.BlazorServer` — a small app whose Blazor UI calls a typed
+`HttpClient` that hits a minimal-API endpoint, so it exercises the cross-tier edges. First
+index it:
+
+```console
+$ edgehop index tests/samples/EdgeHopExplorer.BlazorServer/EdgeHopExplorer.BlazorServer.sln
+Extraction complete: 115 nodes, 168 edges.
+oxc: 2 module(s)  11 nodes, 12 edges.
+JS interop (precise): 2 C# call site(s), 3 JS export(s), 2 JS_CALLS edge(s).
+DotNet interop (precise): 2 JS call site(s), 2 [JSInvokable] method(s), 2 JS_INVOKES edge(s).
+```
+
+**1. Find a symbol** — locate the Web-tier client method and its stable id:
+
+```console
+$ edgehop find-symbol GetAllAsync
+Method     Task<IReadOnlyList<FeatureInfo>> FeatureApiClient.GetAllAsync()
+           id:  Method:System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<EdgeHopExplorer.BlazorServer.Domain.FeatureInfo>> EdgeHopExplorer.BlazorServer.Services.FeatureApiClient.GetAllAsync()
+           doc: Services/FeatureApiClient.cs
+
+1 match on branch 'main'.
+```
+
+**2. Look up its relationships** — what does this method reach? Note the `HTTP_CALLS` edge:
+EdgeHop resolved this client call to the minimal-API method that serves the matching route,
+across a tier boundary the compiler can't cross:
+
+```console
+$ edgehop get-relationships "Method:...FeatureApiClient.GetAllAsync()" --direction out
+
+HTTP_CALLS out
+Method     IEndpointRouteBuilder FeatureEndpoints.MapFeatureEndpoints(IEndpointRouteBuilder app)
+           id:  Method:...EdgeHopExplorer.BlazorServer.Endpoints.FeatureEndpoints.MapFeatureEndpoints(...)
+           doc: Endpoints/FeatureEndpoints.cs
+           routes: GET /api/features/all, GET /api/features/{name}, POST /api/features/search
+
+REFERENCES out
+NamedType  FeatureInfo
+           id:  NamedType:EdgeHopExplorer.BlazorServer.Domain.FeatureInfo
+           doc: Domain/FeatureInfo.cs
+
+2 relationships on branch 'main'.
+```
+
+**3. Find a path from one call to another** — trace how the Blazor page's init handler
+reaches the API endpoint. The shortest directed path walks a `CALLS` edge and then the
+cross-tier `HTTP_CALLS` edge in a single traversal:
+
+```console
+$ edgehop get-path "Method:...Features.OnInitializedAsync()" "Method:...FeatureEndpoints.MapFeatureEndpoints(...)"
+Path ... (2 hops):
+
+Task Features.OnInitializedAsync() --CALLS--> Task<IReadOnlyList<FeatureInfo>> FeatureApiClient.GetAllAsync() --HTTP_CALLS--> IEndpointRouteBuilder FeatureEndpoints.MapFeatureEndpoints(IEndpointRouteBuilder app)
+```
+
+That's a Blazor UI handler → typed HTTP client → API endpoint chain, reconstructed from the
+graph rather than guessed from text. Add `--json` to any query verb for the exact MCP tool
+shape.
+
 ## Roadmap
 
 - **Platform-independent JS/TS parser.** The one thing tying EdgeHop to Windows/x64 today is
