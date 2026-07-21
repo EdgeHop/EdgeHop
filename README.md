@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/EdgeHop/EdgeHop/main/Assets/Images/edgehop-title.svg" alt="EdgeHop" width="460">
+  <img src="https://raw.githubusercontent.com/EdgeHop/EdgeHop/main/Assets/Images/edgehop-title.svg" alt="EdgeHop" width="100%">
 </p>
 
 <h3 align="center">Stop grepping. Start knowing.</h3>
