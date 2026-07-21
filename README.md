@@ -267,8 +267,23 @@ Task Features.OnInitializedAsync() --CALLS--> Task<IReadOnlyList<FeatureInfo>> F
 ```
 
 That's a Blazor UI handler → typed HTTP client → API endpoint chain, reconstructed from the
-graph rather than guessed from text. Add `--json` to any query verb for the exact MCP tool
-shape.
+graph rather than guessed from text.
+
+**4. See which routes that endpoint serves** — the path lands on the minimal-API method;
+inspect it and EdgeHop reports the concrete, verb-prefixed HTTP routes it registers, so the
+trace ends at the actual URLs the UI ultimately reaches:
+
+```console
+$ edgehop find-symbol MapFeatureEndpoints
+Method     IEndpointRouteBuilder FeatureEndpoints.MapFeatureEndpoints(IEndpointRouteBuilder app)
+           id:  Method:...EdgeHopExplorer.BlazorServer.Endpoints.FeatureEndpoints.MapFeatureEndpoints(...)
+           doc: Endpoints/FeatureEndpoints.cs
+           routes: GET /api/features/all, GET /api/features/{name}, POST /api/features/search
+
+1 match on branch 'main'.
+```
+
+Add `--json` to any query verb for the exact MCP tool shape.
 
 ## Roadmap
 
