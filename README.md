@@ -1,4 +1,4 @@
-# EdgeHop
+# EdgeHop — Stop grepping. Start knowing.
 
 [![CI](https://github.com/EdgeHop/EdgeHop/actions/workflows/ci.yml/badge.svg)](https://github.com/EdgeHop/EdgeHop/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/vpre/EdgeHop.svg)](https://www.nuget.org/packages/EdgeHop)
